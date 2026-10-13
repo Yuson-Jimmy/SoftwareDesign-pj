@@ -91,6 +91,23 @@ export abstract class Shape {
     throw new ModelError(`unknown attribute: ${attr}`);
   }
 
+  /** 撤销 set 时把「原本未设置」的样式属性还原为未设置（几何属性必有值，不支持清除） */
+  clearAttribute(attr: string): void {
+    if (attr === 'fill') {
+      this.fill = undefined;
+      return;
+    }
+    if (attr === 'stroke') {
+      this.stroke = undefined;
+      return;
+    }
+    if (attr === 'stroke-width') {
+      this.strokeWidth = undefined;
+      return;
+    }
+    throw new ModelError(`unknown attribute: ${attr}`);
+  }
+
   /** 类型展示名（tree/show 用），默认等于 tag；复合图形插件可覆盖 */
   get kind(): string {
     return this.tag;
