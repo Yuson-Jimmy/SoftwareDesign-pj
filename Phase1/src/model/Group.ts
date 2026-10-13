@@ -77,6 +77,9 @@ export class Group extends Shape {
   }
 
   toSVG(indent: string): string {
+    if (this.children.length === 0) {
+      return `${indent}<${this.tag} ${this.attrsString()}/>`;
+    }
     const open = `${indent}<${this.tag} ${this.attrsString()}>`;
     const inner = this.children.map((c) => c.toSVG(indent + '  ')).join('\n');
     return `${open}\n${inner}\n${indent}</${this.tag}>`;
