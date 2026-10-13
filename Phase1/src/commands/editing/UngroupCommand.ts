@@ -27,17 +27,15 @@ export class UngroupCommand implements Command {
 
     const apply = (): void => {
       d.detach(group);
+      // 用 reparent 而不是直接 attach：先把子图形从 group 的 children 里摘干净
       for (let i = 0; i < children.length; i++) {
-        d.attach(children[i], parent, index + i);
+        d.reparent(children[i], parent, index + i);
       }
     };
     const revert = (): void => {
-      for (const child of children) {
-        d.detach(child);
-      }
       d.attach(group, parent, index);
       for (const child of children) {
-        d.attach(child, group);
+        d.reparent(child, group);
       }
     };
 

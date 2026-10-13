@@ -26,6 +26,11 @@ export class Document {
   attach(shape: Shape, parent: Group | null, index?: number): void {
     const p = parent ?? this.root;
     this.assertAbsentDeep(shape);
+    // 防御：若 shape 还挂在别的父容器里（调用方忘了 detach），先从旧父容器摘下，
+    // 避免一个图形同时出现在两个 children 列表里
+    if (shape.parent && shape.parent !== p) {
+      shape.parent.remove(shape);
+    }
     p.insert(shape, index);
     this.registerDeep(shape);
   }
