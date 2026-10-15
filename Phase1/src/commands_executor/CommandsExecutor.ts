@@ -1,4 +1,3 @@
-import { Document } from '../model/Document';
 import type { EditOutcome } from '../model/EditOutcome';
 import type { EditorModel } from '../model/EditorModel';
 import { ModelError } from '../model/Shape';
@@ -60,12 +59,12 @@ export class CommandsExecutor {
     return this.record(this.model.deleteShape(id));
   }
 
-  move(id: string, dx: number, dy: number): string {
-    return this.record(this.model.moveShape(id, dx, dy));
+  move(id: string, dxRaw: string, dyRaw: string): string {
+    return this.record(this.model.moveShape(id, dxRaw, dyRaw));
   }
 
-  scale(id: string, factor: number): string {
-    return this.record(this.model.scaleShape(id, factor));
+  scale(id: string, factorRaw: string): string {
+    return this.record(this.model.scaleShape(id, factorRaw));
   }
 
   set(id: string, attr: string, value: string): string {
@@ -128,9 +127,24 @@ export class CommandsExecutor {
     return this.model.canvasSize();
   }
 
-  /** 取当前文档（tree/show 只读渲染用）；未 init/read 时报统一错误 */
-  document(): Document {
-    return this.model.document();
+  /** tree [id]：结构树渲染（渲染在模型内完成，命令层只拿字符串） */
+  tree(id?: string): string {
+    return this.model.tree(id);
+  }
+
+  /** show <id>：单个图形的属性明细 */
+  show(id: string): string {
+    return this.model.show(id);
+  }
+
+  /**
+   * 要求当前已有文档，否则抛出模型的统一错误
+   * （"no document. use 'init' or 'read' first"）。
+   * 命令层用它做前置检查以保持「no document 优先于 invalid arguments」，
+   * 而无需接触 Document 类型。
+   */
+  requireDocument(): void {
+    this.model.document();
   }
 
   // ---------- 内部 ----------

@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, parseNumber, rethrow } from '../Command';
+import { Command, CommandError, parseNumber, requireDoc, rethrow } from '../Command';
 
 /** canvas [w] [h]：无参数显示画布尺寸；带参数修改尺寸（属文档类，执行后 undo/redo 禁止） */
 export class CanvasCommand implements Command {
@@ -7,7 +7,7 @@ export class CanvasCommand implements Command {
   readonly usage = 'canvas [w] [h]';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length === 0) {
       try {
         return executor.canvasSize();

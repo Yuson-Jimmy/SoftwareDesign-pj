@@ -1,7 +1,13 @@
 import type { Group } from './Group';
 
-/** 领域错误：message 不带 error: 前缀，由 cli 层统一包装 */
-export class ModelError extends Error {}
+/**
+ * 领域错误：message 不带 error: 前缀，由 cli 层统一包装。
+ * domainError 标记让 commands 层无需 import 本类即可识别
+ * 「用户可见的领域错误」（结构化判别，保持依赖单向）。
+ */
+export class ModelError extends Error {
+  readonly domainError = true;
+}
 
 /** 数字格式化：10.0 -> "10"，10.5 -> "10.5" */
 export function fmt(n: number): string {

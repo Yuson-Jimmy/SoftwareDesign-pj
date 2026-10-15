@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, rethrow } from '../Command';
+import { Command, CommandError, requireDoc, rethrow } from '../Command';
 
 /**
  * group <newGid> <id1> <id2>…：
@@ -10,7 +10,7 @@ export class GroupCommand implements Command {
   readonly usage = 'group <newGid> <id1> <id2>…';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length < 2) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
     const [gid, ...ids] = args;
     try {

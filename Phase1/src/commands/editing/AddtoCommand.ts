@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, rethrow } from '../Command';
+import { Command, CommandError, requireDoc, rethrow } from '../Command';
 
 /** addto <gid> <id>：把已有图形移入容器（作为最后一个子节点） */
 export class AddtoCommand implements Command {
@@ -7,7 +7,7 @@ export class AddtoCommand implements Command {
   readonly usage = 'addto <gid> <id>';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length !== 2) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
     try {
       return executor.addTo(args[0], args[1]);

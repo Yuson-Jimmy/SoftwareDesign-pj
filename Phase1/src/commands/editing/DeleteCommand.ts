@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, rethrow } from '../Command';
+import { Command, CommandError, requireDoc, rethrow } from '../Command';
 
 /** delete <id>：容器连同全部子孙删除；一个 undo 单元还原 */
 export class DeleteCommand implements Command {
@@ -7,7 +7,7 @@ export class DeleteCommand implements Command {
   readonly usage = 'delete <id>';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length !== 1) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
     try {
       return executor.deleteShape(args[0]);

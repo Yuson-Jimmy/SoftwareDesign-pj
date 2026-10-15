@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, rethrow } from '../Command';
+import { Command, CommandError, requireDoc, rethrow } from '../Command';
 
 /**
  * ungroup <gid>：解散容器，子图形提升到原容器的父级、占据原容器的位置。
@@ -10,7 +10,7 @@ export class UngroupCommand implements Command {
   readonly usage = 'ungroup <gid>';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length !== 1) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
     try {
       return executor.ungroup(args[0]);

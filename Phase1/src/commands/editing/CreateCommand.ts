@@ -1,5 +1,5 @@
 import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
-import { Command, CommandError, doc, rethrow } from '../Command';
+import { Command, CommandError, requireDoc, rethrow } from '../Command';
 
 /**
  * create <type> <id> [params…] [in <containerId>]
@@ -10,7 +10,7 @@ export class CreateCommand implements Command {
   readonly usage = 'create <type> <id> [params…] [in <containerId>]';
 
   execute(executor: CommandsExecutor, args: string[]): string {
-    doc(executor);
+    requireDoc(executor);
     if (args.length < 2) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
     const [type, id] = args;
 

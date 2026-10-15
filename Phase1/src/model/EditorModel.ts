@@ -1,7 +1,8 @@
 import { Document } from './Document';
+import { renderShape, renderTree } from './DisplayView';
 import type { EditOutcome } from './EditOutcome';
 import { Group } from './Group';
-import { ModelError, Shape } from './Shape';
+import { ModelError, parseNum, Shape } from './Shape';
 import { createDefaultFactory, ShapeFactory } from './ShapeFactory';
 import { SvgReader } from './SvgReader';
 import { SvgWriter } from './SvgWriter';
@@ -43,7 +44,8 @@ interface Slot {
  * - 文档类指令：init / read / save / resizeCanvas（执行后 undo/redo 禁止，由执行器负责封锁）
  * - 编辑类指令：createShape / deleteShape / moveShape / scaleShape / setShapeAttribute /
  *   groupShapes / ungroupShape / addToGroup / reorder，均返回 EditOutcome（回显 + 逆操作闭包）
- * - 查询：document / hasDocument / canvasSize（显示类命令只读）
+ * - 显示类指令：tree / show（只读渲染，返回字符串，渲染逻辑在 DisplayView）
+ * - 查询：document / hasDocument / canvasSize
  *
  * 模型不认识 Command、不认识历史栈：undo/redo「操作」由 commands_executor 实现。
  */
@@ -77,6 +79,18 @@ export class EditorModel {
   canvasSize(): string {
     const d = this.document();
     return `canvas ${d.width}x${d.height}`;
+  }
+
+  // ---------- 显示类指令（只读渲染，不进历史） ----------
+
+  /** tree [id]：结构树（渲染逻辑在 DisplayView，模型内部完成） */
+  tree(id?: string): string {
+    return renderTree(this.document(), id);
+  }
+
+  /** show <id>：单个图形的属性明细 */
+  show(id: string): string {
+    return renderShape(this.document(), id);
   }
 
   // ---------- 文档类指令（执行后 undo/redo 禁止） ----------
@@ -177,10 +191,17 @@ export class EditorModel {
     };
   }
 
-  /** move <id> <dx> <dy>：增量平移；容器整体平移 */
-  moveShape(id: string, dx: number, dy: number): EditOutcome {
+  /**
+   * move <id> <dx> <dy>：增量平移；容器整体平移。
+   * dx/dy 为原始字符串：数字解析（parseNum）安排在 mustFind 之后，
+   * 保持「no such shape 优先于 invalid number」的报错顺序，
+   * 命令层因此无需接触模型做只读预检。
+   */
+  moveShape(id: string, dxRaw: string, dyRaw: string): EditOutcome {
     const d = this.document();
     const shape = mustFind(d, id);
+    const dx = parseNum(dxRaw, 'dx');
+    const dy = parseNum(dyRaw, 'dy');
 
     shape.move(dx, dy);
 
@@ -197,10 +218,11 @@ export class EditorModel {
     };
   }
 
-  /** scale <id> <factor>：等比缩放全部几何属性；容器递归到每个子孙 */
-  scaleShape(id: string, factor: number): EditOutcome {
+  /** scale <id> <factor>：等比缩放全部几何属性；容器递归到每个子孙；factor 处理同 move */
+  scaleShape(id: string, factorRaw: string): EditOutcome {
     const d = this.document();
     const shape = mustFind(d, id);
+    const factor = parseNum(factorRaw, 'factor');
     if (factor <= 0) throw new ModelError('scale factor must be positive');
 
     shape.scale(factor);
