@@ -66,7 +66,8 @@ ___发现Agent生成的readme.md文档中“伪造”了与AI对话的过程记�
 阅读AI生成的代码，发现AI在实现代码时与期望不同，我希望的是cli仅仅只能依赖commands，之后commands才能依赖io和editor，但实际上AI生成的代码出现了cli对io直接依赖，不符合command模式<br>
 或许是第一次与K3交流时，与AI的沟通出现了问题但未及时发现，因为io和editor貌似没有分开的必要性，所以下一步重构项目，按照cli-->commands-->commands_executor-->model的依赖性完成任务。
 ## 二.第二次生成代码
-第二次的提示词：按照phase_cli_1.md文档中的要求重构项目，要求将io和editor合并，按照cli-->commands-->commands_executor-->model的command模式，将undo和redo视为“操作”在commands_executor中实现，其他的“指令“需要封装在model中
+第二次的提示词：按照phase_cli_1.md文档中的要求重构项目，要求将io和editor合并，按照cli-->commands-->commands_executor-->model的command模式，将undo和redo视为“操作”在commands_executor中实现，其他的“指令“需要封装在model中<br>
+发现AI此时的目标会聚焦于“重构”二字，目的由新建一份代码变成了不改变程序功能改变结构（蕴含了先前的代码是正确的假设）
 
 
 
