@@ -101,8 +101,8 @@
 
 ### 1.2 文档
 
-格式要求：**Markdown**，放在工程的 `doc/` 目录下，名为 `README.md`；内容即以下几节：
-
+格式要求：**Markdown**，放在工程的 `doc/` 目录下，名为 `readme_second.md`；内容即以下几节：
+readme_second
 ### 架构方案
 
 

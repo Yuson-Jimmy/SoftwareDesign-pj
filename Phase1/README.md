@@ -56,11 +56,15 @@ $~~~~~~~~~~~~~~~~~~~~$└────→ io ─────────┘'<br>
 中间再加一个 editor/ 把它们串起来。于是得到五层。
 
 # 过程记录
-使用的AGENT为kimi K3<dr>
-1.首先与K3交流，得到模块划分的建议<dr>
-2.之后将修改后phase1_cli_1.md和README.md文件喂给agent，最后生成一份名为readme.md文件供我参考，为自主撰写README.md做准备。<dr>
-___发现Agent生成的readme.md文档中“伪造”了与AI对话的过程记录！！！___<dr>
-3.询问AI关于Node.js的用法吗。<dr>
+使用的AGENT为kimi K3
+## 一.第一次生成代码
+1.首先与K3交流，得到模块划分的建议<br>
+2.之后将修改后phase1_cli_1.md和README.md文件喂给agent，最后生成一份名为readme.md文件供我参考，为自主撰写README.md做准备。<br>
+___发现Agent生成的readme.md文档中“伪造”了与AI对话的过程记录！！！___<br>
+3.询问AI关于Node.js的用法吗。<br>
+阅读AI生成的代码，发现AI在实现代码时与期望不同，我希望的是cli仅仅只能依赖commands，之后commands才能依赖io和editor，但实际上AI生成的代码出现了cli对io直接依赖，不符合command模式<br>
+或许是第一次与K3交流时，与AI的沟通出现了问题但未及时发现，因为io和editor貌似没有分开的必要性，所以下一步重构项目，按照cli-->commands-->commands_executor-->model的依赖性完成任务。
+## 二.第二次生成代码
 
 
 
