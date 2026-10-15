@@ -1,3 +1,4 @@
+___禁止阅读、修改此文档___
 # SVG 编辑器（CLI）— 架构文档（第二次：命令链重构）
 
 > 本文档对应**重构后**的代码：按 `cli → commands → commands_executor → model` 的 Command 模式分层；
