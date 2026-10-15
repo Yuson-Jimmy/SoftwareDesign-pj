@@ -1,6 +1,3 @@
-import type { SvgReader } from '../model/SvgReader';
-import type { SvgWriter } from '../model/SvgWriter';
-import type { ShapeFactory } from '../model/ShapeFactory';
 import { Command, CommandError } from './Command';
 import { HelpCommand } from './display/HelpCommand';
 import { ShowCommand } from './display/ShowCommand';
@@ -43,21 +40,21 @@ export class CommandRegistry {
   }
 }
 
-export function createDefaultRegistry(deps: {
-  factory: ShapeFactory;
-  reader: SvgReader;
-  writer: SvgWriter;
-}): CommandRegistry {
+/**
+ * 默认注册表。命令都是无状态薄壳：语法校验后转发给 CommandsExecutor，
+ * 因此注册表本身不需要任何依赖。
+ */
+export function createDefaultRegistry(): CommandRegistry {
   const registry = new CommandRegistry();
 
   // 文档类（执行后 undo/redo 禁止）
   registry.register(new InitCommand());
-  registry.register(new ReadCommand(deps.reader));
-  registry.register(new SaveCommand(deps.writer));
+  registry.register(new ReadCommand());
+  registry.register(new SaveCommand());
   registry.register(new CanvasCommand());
 
   // 图形编辑类（可 undo/redo）
-  registry.register(new CreateCommand(deps.factory));
+  registry.register(new CreateCommand());
   registry.register(new DeleteCommand());
   registry.register(new MoveCommand());
   registry.register(new ScaleCommand());
@@ -72,7 +69,7 @@ export function createDefaultRegistry(deps: {
   registry.register(new TreeCommand());
   registry.register(new ShowCommand());
 
-  // 撤销重做
+  // 撤销重做（「操作」在 commands_executor 中实现，这里只是转发）
   registry.register(new UndoCommand());
   registry.register(new RedoCommand());
 

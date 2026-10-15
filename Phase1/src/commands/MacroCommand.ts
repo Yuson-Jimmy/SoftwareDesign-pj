@@ -1,9 +1,9 @@
-import type { Editor } from '../editor/Editor';
+import type { CommandsExecutor } from '../commands_executor/CommandsExecutor';
 import type { Command } from './Command';
 
 /**
  * 组合命令：把若干子命令打包成一个 undo 单元。
- * 本阶段各编辑命令自行维护逆操作状态，MacroCommand 作为基础设施
+ * 本阶段各编辑指令在 model 中自行维护逆操作状态，MacroCommand 作为基础设施
  * 预留给后续插件化阶段的复合图形操作（如 box 的多部件创建）。
  */
 export class MacroCommand implements Command {
@@ -22,10 +22,10 @@ export class MacroCommand implements Command {
     return this;
   }
 
-  execute(editor: Editor): string {
+  execute(executor: CommandsExecutor): string {
     const outputs: string[] = [];
     for (const child of this.children) {
-      outputs.push(child.execute(editor, this.args));
+      outputs.push(child.execute(executor, this.args));
     }
     return outputs.join('\n');
   }

@@ -1,26 +1,18 @@
 import * as readline from 'node:readline';
 import { CommandError } from '../commands/Command';
 import { CommandRegistry, createDefaultRegistry } from '../commands/CommandRegistry';
-import { Editor } from '../editor/Editor';
-import { SvgReader } from '../model/SvgReader';
-import { SvgWriter } from '../model/SvgWriter';
-import { createDefaultFactory } from '../model/ShapeFactory';
+import { CommandsExecutor } from '../commands_executor/CommandsExecutor';
+import { EditorModel } from '../model/EditorModel';
 import { Messages } from './Messages';
 import { ParseError, parseLine } from './Parser';
 
-/** REPL 主循环：读行 → 解析 → 分发 → 打印。只依赖 commands/editor，不碰模型细节。 */
+/**
+ * REPL 主循环：读行 → 解析 → 分发 → 打印。
+ * 装配链：cli → commands → commands_executor → model。
+ */
 export class Repl {
-  private readonly editor = new Editor();
-  private readonly registry: CommandRegistry;
-
-  constructor() {
-    const factory = createDefaultFactory();
-    this.registry = createDefaultRegistry({
-      factory,
-      reader: new SvgReader(factory),
-      writer: new SvgWriter(),
-    });
-  }
+  private readonly executor = new CommandsExecutor(new EditorModel());
+  private readonly registry: CommandRegistry = createDefaultRegistry();
 
   /** 执行一行，返回要打印的输出（null 表示无输出：空行/注释） */
   handleLine(line: string): string | null {
@@ -36,7 +28,7 @@ export class Repl {
     const [name, ...args] = tokens;
     try {
       const command = this.registry.resolve(name);
-      return Messages.result(command.execute(this.editor, args));
+      return Messages.result(command.execute(this.executor, args));
     } catch (err) {
       if (err instanceof CommandError) return Messages.error(err.message);
       throw err;

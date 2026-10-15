@@ -1,15 +1,15 @@
-import type { Editor } from '../../editor/Editor';
+import type { CommandsExecutor } from '../../commands_executor/CommandsExecutor';
 import { Group } from '../../model/Group';
 import { Shape } from '../../model/Shape';
 import { Command, CommandError, doc, mustFind } from '../Command';
 
-/** tree [id]：结构树，内联关键几何属性 */
+/** tree [id]：结构树，内联关键几何属性（只读渲染，不进历史） */
 export class TreeCommand implements Command {
   readonly name = 'tree';
   readonly usage = 'tree [id]';
 
-  execute(editor: Editor, args: string[]): string {
-    const d = doc(editor);
+  execute(executor: CommandsExecutor, args: string[]): string {
+    const d = doc(executor);
     if (args.length > 1) throw new CommandError(`invalid arguments, usage: ${this.usage}`);
 
     if (args.length === 1) {
