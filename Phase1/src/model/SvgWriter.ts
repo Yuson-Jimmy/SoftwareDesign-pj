@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
-import { Document } from '../model/Document';
-import { fmt, ModelError } from '../model/Shape';
+import { Document } from './Document';
+import { fmt, ModelError } from './Shape';
 
 /** SVG 写出：Document → 文件。可直接在浏览器打开预览。 */
 export class SvgWriter {

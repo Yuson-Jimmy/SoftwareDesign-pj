@@ -1,6 +1,6 @@
 import type { Editor } from '../../editor/Editor';
 import { ModelError } from '../../model/Shape';
-import type { SvgWriter } from '../../io/SvgWriter';
+import type { SvgWriter } from '../../model/SvgWriter';
 import { Command, CommandError, doc } from '../Command';
 
 /** save [file.svg]：保存当前文档；无参数时保存到读入时的路径 */

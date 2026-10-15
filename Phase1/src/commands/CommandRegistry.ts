@@ -1,5 +1,5 @@
-import type { SvgReader } from '../io/SvgReader';
-import type { SvgWriter } from '../io/SvgWriter';
+import type { SvgReader } from '../model/SvgReader';
+import type { SvgWriter } from '../model/SvgWriter';
 import type { ShapeFactory } from '../model/ShapeFactory';
 import { Command, CommandError } from './Command';
 import { HelpCommand } from './display/HelpCommand';

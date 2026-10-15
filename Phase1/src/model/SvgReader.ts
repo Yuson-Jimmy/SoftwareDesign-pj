@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
-import { Document } from '../model/Document';
-import { Group } from '../model/Group';
-import { ModelError } from '../model/Shape';
-import type { ShapeFactory } from '../model/ShapeFactory';
+import { Document } from './Document';
+import { Group } from './Group';
+import { ModelError } from './Shape';
+import type { ShapeFactory } from './ShapeFactory';
 
 /** 轻量 XML 节点（只覆盖 SVG 需要的子集） */
 interface XmlElement {

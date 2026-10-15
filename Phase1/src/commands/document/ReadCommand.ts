@@ -1,6 +1,6 @@
 import type { Editor } from '../../editor/Editor';
 import { ModelError } from '../../model/Shape';
-import type { SvgReader } from '../../io/SvgReader';
+import type { SvgReader } from '../../model/SvgReader';
 import { Command, CommandError } from '../Command';
 
 /** read <file.svg>：读入 SVG 为当前文档；缺 id 自动补并逐条警告 */
