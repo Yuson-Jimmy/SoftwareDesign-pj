@@ -106,9 +106,9 @@ export function createDefaultFactory(): ShapeFactory {
   f.register(
     'ellipse',
     (id, a) => {
-      need(a, 5, 6, 'create ellipse <id> <cx> <cy> <rx> <ry> [fill]');
+      need(a, 4, 5, 'create ellipse <id> <cx> <cy> <rx> <ry> [fill]');
       const e = new Ellipse(id, parseNum(a[0], 'cx'), parseNum(a[1], 'cy'), parseNum(a[2], 'rx'), parseNum(a[3], 'ry'));
-      if (a[5] !== undefined) e.fill = a[5];
+      if (a[4] !== undefined) e.fill = a[4];
       return e;
     },
     (id, attrs) => {

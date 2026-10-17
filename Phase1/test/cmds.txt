@@ -1,0 +1,30 @@
+init
+canvas
+canvas 400 300
+create rect r1 0 0 10 10 red
+create circle c1 5 5 2
+create ellipse e1 1 2 3 4
+create line l1 0 0 9 9 black
+create text t1 1 1 "hi"
+create g g1
+create rect r2 1 1 2 2 #fff in g1
+addto g1 c1
+group g2 e1 l1
+addto g1 g2
+ungroup g2
+move g1 1 1
+scale g1 2
+set t1 text "yo"
+set r1 fill blue
+front r1
+back r1
+delete r2
+tree
+tree g1
+show r1
+help
+undo
+redo
+save cmds.svg
+read cmds.svg
+save

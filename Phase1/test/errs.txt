@@ -1,0 +1,20 @@
+tree
+init
+create rect r1 0 0 1 1
+create rect r1 0 0 1 1
+move r9 1 1
+create rect r2 0 0 1 1 in node9
+create rect r2 0 0 1 1 in r1
+create hexagon h1
+ungroup r1
+create g g1
+create rect r3 0 0 1 1 in g1
+group g2 g1 r3
+ungroup g1
+scale r1 0
+set r1 bogus 1
+read nope.svg
+save nope/x.svg
+save ok.svg
+undo
+read test/fix.svg

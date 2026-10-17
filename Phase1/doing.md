@@ -20,11 +20,11 @@ npm run typecheck
 npm run build
 
 # 5. 回放测试脚本（验收用）
-cat test/session1.txt | npm run cli
-cat test/session2.txt | npm run cli
-cat test/session3.txt | npm run cli
-cat test/session4.txt | npm run cli
+cat test/cmds.txt | npm run cli   # 正常路径：20 条命令全覆盖
+cat test/errs.txt | npm run cli   # 错误路径：4.2 错误表 + 4.3 + set 白名单 + 自动补 id 警告
 ```
+
+测试报告见 `test/test.md`（覆盖矩阵、规范文案逐条比对、发现的 bug 记录）；`test/fix.svg` 是 `errs.txt` 所需的含无 id 元素的 fixture。
 
 说明：
 
