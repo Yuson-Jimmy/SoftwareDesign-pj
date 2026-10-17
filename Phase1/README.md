@@ -118,8 +118,11 @@ ___发现Agent生成的readme.md文档中“伪造”了与AI对话的过程记�
 同时发现<br>1. **commands → model 的只读边**：`tree`/`show` 需要 `Shape`/`Group` 的类型信息做渲染，`move`/`scale` 用 `mustFind` 做只读预检以保持「no such shape 优先于 invalid number」的报错顺序。限定为**只读**，一切状态修改必须经由 executor；<br>
 实际上tree、show的指令并未完全封装与model中，commands仍然持有部分命令，需要修改。
 ## 三.第三次生成代码
-提示词：在readme_second.md中写道：`tree`/`show` 需要 `Shape`/`Group` 的类型信息做渲染，`move`/`scale` 用 `mustFind` 做只读预检以保持「no such shape 优先于 invalid number」的报错顺序。这些command能否封装在model中？我需要command类完全不依赖于model类，修改后完成doc/readme_third.md
-
+提示词：在readme_second.md中写道：`tree`/`show` 需要 `Shape`/`Group` 的类型信息做渲染，`move`/`scale` 用 `mustFind` 做只读预检以保持「no such shape 优先于 invalid number」的报错顺序。这些command能否封装在model中？我需要command类完全不依赖于model类，修改后完成doc/readme_third.md<br>
+在代码生成后，command类已经完全不依赖于model类，command模式已经完全形成。<br>
+__下一步的问题__是代码如何可信，首先我阅读了源码，但同时还需要相关的测试。
+## 四.第四次生成代码
+提示词：在/test中以尽可能少的文本量对phase_cli.md中所需求的指令和报错进行测试。更新doing.md。在/test中写test.md为代码的测试的报告。
 
 # 一致性自查
 ## 1.模块划分
@@ -135,3 +138,5 @@ ___发现Agent生成的readme.md文档中“伪造”了与AI对话的过程记�
 | **Facade**（轻量） | `commands_executor/CommandsExecutor.ts` | commands 层只见执行器一个入口，模型指令的调用 + 历史登记的编排全部藏在执行器内 |
 ## 2.依赖方向
 # 质量保证手段
+1.充分阅读了源码。<br>
+2
