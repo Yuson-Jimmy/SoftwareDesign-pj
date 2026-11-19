@@ -1,0 +1,37 @@
+{
+  "name": "svg-file-outline",
+  "displayName": "SVG File Badge and Outline",
+  "description": "Adds an SVG Explorer badge and a source-linked native outline.",
+  "version": "0.1.0",
+  "publisher": "software-design-lab",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "typecheck": "tsc -p ./ --noEmit",
+    "test": "npm run test:unit",
+    "test:unit": "npm run compile && node --test dist/test/unit/xmlParser.test.js",
+    "test:integration": "npm run compile && node dist/test/integration/runTest.js",
+    "test:all": "npm run test:unit && npm run test:integration"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/test-electron": "^2.4.1",
+    "mocha": "^11.0.0",
+    "typescript": "^5.6.0"
+  }
+}

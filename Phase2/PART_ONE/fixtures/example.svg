@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <g id="flow">
+    <rect id="start" x="20" y="20" width="120" height="60" fill="#f5a623"/>
+    <g id="nested">
+      <text x="30" y="50">Hello &amp; SVG</text>
+    </g>
+    <circle id="done" cx="220" cy="50" r="30" fill="#78a9ff"/>
+  </g>
+</svg>
