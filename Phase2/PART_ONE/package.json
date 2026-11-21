@@ -26,6 +26,13 @@
     "test:integration": "npm run compile && node dist/test/integration/runTest.js",
     "test:all": "npm run test:unit && npm run test:integration"
   },
+  "contributes": {
+    "configurationDefaults": {
+      "workbench.editorAssociations": {
+        "*.svg": "default"
+      }
+    }
+  },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.10.0",

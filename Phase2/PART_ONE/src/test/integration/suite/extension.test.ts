@@ -57,6 +57,14 @@ suite('SVG extension', () => {
     assert.ok(labels.includes('g#nested'));
   });
 
+  test('opens SVG symbol navigation in the text editor instead of Image Preview', async () => {
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+    const uri = fixture('example.svg');
+    await vscode.commands.executeCommand('vscode.open', uri);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    assert.equal(vscode.window.activeTextEditor?.document.uri.toString(), uri.toString());
+  });
+
   test('reflects edits and safely clears the outline for incomplete XML', async () => {
     const document = await vscode.workspace.openTextDocument({
       language: 'xml',

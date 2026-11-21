@@ -93,6 +93,8 @@ code --install-extension svg-file-outline-0.1.0.vsix
 5. 返回符号后，VSCode 负责原生树显示；点击节点时使用 `selectionRange` 定位源码。
 6. 两个注册结果都加入 `context.subscriptions`，由 VSCode 在停用时统一释放。
 
+大纲导航会使用资源的默认编辑器。为避免 VSCode 将 `.svg` 默认交给 Image Preview，`package.json` 通过 `contributes.configurationDefaults` 将 `*.svg` 关联到内置文本编辑器 `default`。这不是运行时修改用户设置，仍可通过 **Open With... → Image Preview** 查看图像；若用户显式配置了其他编辑器关联，用户设置优先。
+
 ## 5. 文件装饰与 Decorator、Adapter 的关系和差异
 
 ### 5.1 接口与对象组合
@@ -160,8 +162,9 @@ npm run test:integration
 | SVG 标记 | 集成测试确认 `example.svg` 的 badge 恰为 `[]` |
 | 非 SVG 与目录 | 集成测试确认 `plain.txt` 和 `directory.svg/` 无装饰 |
 | VSCode 注册 | 集成测试通过 `vscode.executeDocumentSymbolProvider` 验证真实注册调用链 |
+| 默认文本导航 | 集成测试通过 `vscode.open` 验证打开 SVG 后存在对应 `activeTextEditor`，不会进入 Image Preview |
 
-本次验证结果：单元测试 **6 项通过**；真实扩展宿主集成测试 **4 项通过**。另有 1 个默认跳过的桌面截图场景，仅在设置 `SVG_CAPTURE_DIR` 时运行；截图采集运行时该场景也执行通过。
+本次验证结果：单元测试 **6 项通过**；真实扩展宿主集成测试 **5 项通过**。另有 1 个默认跳过的桌面截图场景，仅在设置 `SVG_CAPTURE_DIR` 时运行；截图采集运行时该场景也执行通过。
 
 ## 8. AI 协作检查与修正记录
 
