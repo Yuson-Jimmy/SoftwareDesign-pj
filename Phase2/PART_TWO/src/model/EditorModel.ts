@@ -99,19 +99,23 @@ export class EditorModel {
     return renderShape(this.document(), id);
   }
 
-  /** stats：按公开领域类型统计，不认识任何具体插件。 */
+  /** stats：深度优先按首次出现顺序统计叶子；g 与 box 只计容器。 */
   stats(): string {
     const counts = new Map<string, number>();
     let total = 0;
+    let containers = 0;
     for (const shape of this.document().root.walk()) {
       if (!shape.id) continue;
+      if (shape instanceof Group) {
+        containers++;
+        continue;
+      }
       total++;
       counts.set(shape.type, (counts.get(shape.type) ?? 0) + 1);
     }
-    return [
-      `total ${total}`,
-      ...[...counts.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([type, count]) => `${type} ${count}`),
-    ].join('\n');
+    const byType = [...counts.entries()].map(([type, count]) => `${type}: ${count}`).join('  ');
+    const summary = `(total ${total}, containers ${containers})`;
+    return byType ? `${byType}  ${summary}` : summary;
   }
 
   // ---------- 文档类指令（执行后 undo/redo 禁止） ----------

@@ -1,5 +1,6 @@
 import * as readline from 'node:readline';
 import { Application, createDefaultApplication } from '../app/Application';
+import { createConfiguredApplication } from '../app/ConfiguredApplication';
 import { CommandError } from '../commands/Command';
 import { CommandRegistry } from '../commands/CommandRegistry';
 import { CommandsExecutor } from '../commands_executor/CommandsExecutor';
@@ -56,5 +57,6 @@ export class Repl {
 }
 
 if (require.main === module) {
-  new Repl().run();
+  const configPath = process.env.SVG_EDITOR_CONFIG;
+  new Repl(configPath ? createConfiguredApplication(configPath) : createDefaultApplication()).run();
 }

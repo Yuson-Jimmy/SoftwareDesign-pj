@@ -22,10 +22,12 @@
 1. `createApplication(plugins)` 创建空的 ShapeFactory、AttributeRegistry、装饰器数组及 Phase1 默认命令注册表；
 2. 遍历插件并分别注册四类扩展；
 3. 构造 EditorModel 与 CommandsExecutor；
-4. `createDefaultApplication()` 注册内置六图形、box、modified-star、stats/dir；
+4. `createDefaultApplication()` 分别注册内置六图形、box、modified-star、stats、dir；
 5. `Repl` 只接收 Application，不直接 new 图形或插件。
 
 `createApplication([])` 可启动并完成 `init`，但没有图形和可选命令；`createApplication([builtinShapePlugin])` 提供无第三方框架的 Phase1 行为。这说明启动不依赖任何动态插件加载框架，内置实现也只是普通的显式注册。
+
+`statsPlugin` 与 `createDirPlugin()` 是两个独立插件包，可以分别加入或移出代码装配数组。另一种方式是 JSON 配置装配：默认 `plugins.json` 的 `plugins` 数组列出同名插件，`createConfiguredApplication(path)` 经 `PluginCatalog` 创建相同实例。直接启动 CLI 时可设置 `SVG_EDITOR_CONFIG` 指向配置文件；不设置时使用代码装配。两种方式复用同一个 StatsCommand、DirCommand、DirectoryPort 和 NodeDirectoryAdapter。
 
 ## 4. box 复合图形
 
@@ -37,8 +39,24 @@
 
 ## 5. stats 与 dir
 
-- `stats` 无参数，需要先 init/read。输出首行 `total N`，之后按领域类型字典序输出 `<type> <count>`；box 的内部 rect/text 作为真实树节点计数。
-- `dir [path]` 默认读取当前目录，输出排序后的名称，目录名带 `/`。`DirCommand` 依赖 `DirectoryPort`，`NodeDirectoryAdapter` 负责适配 Node 文件系统，因此测试可注入内存实现。
+### 5.1 stats
+
+`stats` 无参数，需要先 init/read。它从画布根按当前子节点顺序深度优先遍历：普通 g 与 box 只计入 containers，内部叶子继续计数，根 SVG 不计入。输出为单行 `rect: 3  circle: 1  (total 6, containers 2)`，类型按首次出现顺序而非字典序；空文档只输出 `(total 0, containers 0)`。它只读模型，不进入 undo 栈。
+
+### 5.2 dir 及 Adapter 角色
+
+`dir` 不接收参数，只读取 CLI 进程的当前工作目录，与当前 SVG 路径无关。输出目录在前、文件在后，各组按名称升序，每项一行，使用 `[DIR]  name` 或 `[FILE]  name` 两个空格分隔；包含隐藏项，空目录输出 `(empty directory)`。符号链接和其他特殊项不访问目标，作为 `[FILE]` 显示。
+
+适配器模式的对应关系：
+
+| 角色 | 本实现 |
+| --- | --- |
+| Client | `DirCommand`，负责无参数校验和精确输出格式 |
+| Target | `DirectoryPort.list(): DirectoryEntry[]`，公开目录读取端口 |
+| Adaptee | Node `fs.readdirSync(..., { withFileTypes: true })` |
+| Adapter | `NodeDirectoryAdapter`，固定 process.cwd()，转换 Dirent，分组并稳定排序 |
+
+读取失败输出 `error: cannot read directory: <path>`。dir 不需要 init/read，也不修改文档、dirty、cwd 或 undo/redo 历史。
 
 ## 6. 后续插件式修改示例
 
@@ -56,6 +74,6 @@
 npm run test:all
 ```
 
-`src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats、dir 适配器、save 清除修改标记。
+`src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。
 
-最终验证：strict 类型检查通过，**7 项测试全部通过，0 失败**。
+最终验证：strict 类型检查通过，**11 项测试全部通过，0 失败**。

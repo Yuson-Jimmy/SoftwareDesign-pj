@@ -7,7 +7,8 @@ import type { TreeDecorator } from '../model/TreeDecorator';
 import { boxPlugin } from '../plugins/box/BoxPlugin';
 import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
 import { modifiedStarPlugin } from '../plugins/builtin/ModifiedStarPlugin';
-import { createCommandPlugin } from '../plugins/commands/CommandPlugin';
+import { createDirPlugin } from '../plugins/commands/DirPlugin';
+import { statsPlugin } from '../plugins/commands/StatsPlugin';
 import type { Plugin } from '../plugins/Plugin';
 
 export interface Application {
@@ -42,6 +43,7 @@ export function createDefaultApplication(): Application {
     builtinShapePlugin,
     boxPlugin,
     modifiedStarPlugin,
-    createCommandPlugin(),
+    statsPlugin,
+    createDirPlugin(),
   ]);
 }

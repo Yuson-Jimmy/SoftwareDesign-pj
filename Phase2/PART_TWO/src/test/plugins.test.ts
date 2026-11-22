@@ -1,13 +1,19 @@
 import assert from 'node:assert/strict';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import test from 'node:test';
 import { createApplication, createDefaultApplication } from '../app/Application';
+import { createConfiguredApplication } from '../app/ConfiguredApplication';
 import { Repl } from '../cli/Repl';
+import { CommandError } from '../commands/Command';
 import { renderTree } from '../model/DisplayView';
 import { Group } from '../model/Group';
 import { SvgReader } from '../model/SvgReader';
 import { SvgWriter } from '../model/SvgWriter';
 import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
 import { DirCommand } from '../plugins/commands/DirCommand';
+import { createDirPlugin } from '../plugins/commands/DirPlugin';
+import { statsPlugin } from '../plugins/commands/StatsPlugin';
 
 function cli() {
   const application = createDefaultApplication();
@@ -88,15 +94,81 @@ test('box serializes as ordinary SVG and restores or degrades by registration', 
   assert.equal(degraded.find('n1')?.type, 'g');
 });
 
-test('stats command uses public shape types and dir command invokes its adapter', () => {
+test('stats counts leaves depth-first in first-appearance order and excludes containers', () => {
   const { run } = cli();
   run('init');
-  run('create box n1 0 0 10 10 "x"');
-  assert.equal(run('stats'), 'total 3\nbox 1\nrect 1\ntext 1');
-  assert.match(run('dir src') ?? '', /app/);
+  assert.equal(run('stats'), '(total 0, containers 0)');
+  run('create text t 0 0 "first"');
+  run('create rect r1 0 0 1 1');
+  run('create g group');
+  run('create circle c 0 0 1 in group');
+  run('create rect r2 0 0 1 1');
+  run('create box b 0 0 10 10 "box"');
+  assert.equal(run('stats'), 'text: 2  rect: 3  circle: 1  (total 6, containers 2)');
+  assert.equal(run('undo'), 'box#b removed');
+  assert.equal(run('stats'), 'text: 1  rect: 2  circle: 1  (total 4, containers 1)');
+  assert.equal(run('redo'), 'box#b created');
+});
 
-  const dir = new DirCommand({ list: (path) => [`mock:${path}`] });
-  assert.equal(dir.execute({} as never, ['elsewhere']), 'mock:elsewhere');
+test('stats and dir are independently enabled and absent from help when disabled', () => {
+  const statsOnly = new Repl(createApplication([statsPlugin]));
+  statsOnly.handleLine('init');
+  assert.equal(statsOnly.handleLine('stats'), '(total 0, containers 0)');
+  assert.equal(statsOnly.handleLine('dir'), 'error: unknown command: dir');
+  assert.doesNotMatch(statsOnly.handleLine('help') ?? '', /\bdir\s/);
+
+  const dirOnly = new Repl(createApplication([createDirPlugin({ list: () => [] })]));
+  assert.equal(dirOnly.handleLine('dir'), '(empty directory)');
+  assert.equal(dirOnly.handleLine('stats'), 'error: unknown command: stats');
+  assert.doesNotMatch(dirOnly.handleLine('help') ?? '', /\bstats\s/);
+});
+
+test('dir formats mixed, hidden and empty entries with stable grouped sorting', () => {
+  const dir = new DirCommand({
+    list: () => [
+      { name: 'z.txt', kind: 'file' },
+      { name: 'plugins', kind: 'directory' },
+      { name: '.hidden', kind: 'file' },
+      { name: 'docs', kind: 'directory' },
+    ],
+  });
+  // 排序是适配器契约；使用已排序端口结果验证命令的精确格式。
+  assert.equal(dir.execute({} as never, []), '[FILE]  z.txt\n[DIR]  plugins\n[FILE]  .hidden\n[DIR]  docs');
+  assert.equal(new DirCommand({ list: () => [] }).execute({} as never, []), '(empty directory)');
+  assert.throws(() => dir.execute({} as never, ['.']), new CommandError('invalid arguments, usage: dir'));
+});
+
+test('dir failures and successes do not require a document or alter undo history', () => {
+  const failing = new Repl(createApplication([createDirPlugin({
+    list: () => { throw new CommandError('cannot read directory: mock'); },
+  })]));
+  assert.equal(failing.handleLine('dir'), 'error: cannot read directory: mock');
+  assert.equal(failing.handleLine('stats'), 'error: unknown command: stats');
+
+  const { run } = cli();
+  run('init');
+  run('create rect r 0 0 1 1');
+  assert.match(run('dir') ?? '', /\[DIR\]/);
+  assert.equal(run('undo'), 'rect#r removed');
+  assert.equal(run('redo'), 'rect#r created');
+});
+
+test('code and configuration assembly produce identical real-filesystem dir output', () => {
+  const root = path.resolve('.test-output', 'dir-case');
+  fs.mkdirSync(path.join(root, 'zeta'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'alpha'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'a.txt'), 'a');
+  fs.writeFileSync(path.join(root, '.hidden'), 'hidden');
+  const expected = '[DIR]  alpha\n[DIR]  zeta\n[FILE]  .hidden\n[FILE]  a.txt';
+  const previous = process.cwd();
+  try {
+    process.chdir(root);
+    assert.equal(new Repl(createDefaultApplication()).handleLine('dir'), expected);
+    const configPath = path.resolve(previous, 'plugins.json');
+    assert.equal(new Repl(createConfiguredApplication(configPath)).handleLine('dir'), expected);
+  } finally {
+    process.chdir(previous);
+  }
 });
 
 test('modified-star decorates edited nodes and save clears the marks', () => {

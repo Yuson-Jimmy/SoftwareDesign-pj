@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "builtin-shapes",
+    "box",
+    "modified-star",
+    "stats",
+    "dir"
+  ]
+}
