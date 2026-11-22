@@ -3,8 +3,8 @@
 > 本文件由 `scripts/metrics.js` 从 Git 历史生成，请勿手填数字。
 
 - 基线：`final` → `f7498d11eeee7f968acc7cd94941c567adbdaedf`
-- 目标：`HEAD` → `7339731be05363a098df8cc7b2e0e46cd34b6185`
-- 生成命令：`node scripts/metrics.js --from final --to HEAD`
+- 目标：`p2` → `9c600f84506fbe47c97b772ebb94997b30b6bb46`
+- 生成命令：`node scripts/metrics.js --from final --to p2`
 
 ## CLI 三类范围
 

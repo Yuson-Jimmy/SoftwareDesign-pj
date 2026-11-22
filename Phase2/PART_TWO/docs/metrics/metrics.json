@@ -6,8 +6,8 @@
     "revision": "f7498d11eeee7f968acc7cd94941c567adbdaedf"
   },
   "to": {
-    "name": "HEAD",
-    "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185"
+    "name": "p2",
+    "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46"
   },
   "excluded": [
     "test code from CLI totals",
@@ -470,7 +470,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "assembly",
       "file": "Phase2/PART_TWO/src/app/Application.ts",
@@ -481,7 +481,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "assembly",
       "file": "Phase2/PART_TWO/src/app/ConfiguredApplication.ts",
@@ -492,7 +492,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "assembly",
       "file": "Phase2/PART_TWO/src/app/PluginCatalog.ts",
@@ -503,7 +503,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "assembly",
       "file": "Phase2/PART_TWO/src/app/PluginRegistrar.ts",
@@ -514,7 +514,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/cli/Messages.ts",
@@ -525,7 +525,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/cli/Parser.ts",
@@ -536,7 +536,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/cli/Repl.ts",
@@ -547,7 +547,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/Command.ts",
@@ -558,7 +558,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/CommandRegistry.ts",
@@ -569,7 +569,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/MacroCommand.ts",
@@ -580,7 +580,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/RedoCommand.ts",
@@ -591,7 +591,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/UndoCommand.ts",
@@ -602,7 +602,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/display/HelpCommand.ts",
@@ -613,7 +613,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/display/ShowCommand.ts",
@@ -624,7 +624,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/display/TreeCommand.ts",
@@ -635,7 +635,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/document/CanvasCommand.ts",
@@ -646,7 +646,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/document/InitCommand.ts",
@@ -657,7 +657,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/document/ReadCommand.ts",
@@ -668,7 +668,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/document/SaveCommand.ts",
@@ -679,7 +679,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/AddtoCommand.ts",
@@ -690,7 +690,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/CreateCommand.ts",
@@ -701,7 +701,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/DeleteCommand.ts",
@@ -712,7 +712,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/FrontBackCommand.ts",
@@ -723,7 +723,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/GroupCommand.ts",
@@ -734,7 +734,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/MoveCommand.ts",
@@ -745,7 +745,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/ScaleCommand.ts",
@@ -756,7 +756,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/SetCommand.ts",
@@ -767,7 +767,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands/editing/UngroupCommand.ts",
@@ -778,7 +778,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/commands_executor/CommandsExecutor.ts",
@@ -789,7 +789,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/AttributeHandler.ts",
@@ -800,7 +800,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/DisplayView.ts",
@@ -811,7 +811,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/Document.ts",
@@ -822,7 +822,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/EditOutcome.ts",
@@ -833,7 +833,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/EditorModel.ts",
@@ -844,7 +844,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/Group.ts",
@@ -855,7 +855,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/Shape.ts",
@@ -866,7 +866,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/ShapeFactory.ts",
@@ -877,7 +877,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/ShapeProvider.ts",
@@ -888,7 +888,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/SvgReader.ts",
@@ -899,7 +899,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/SvgWriter.ts",
@@ -910,7 +910,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/TreeDecorator.ts",
@@ -921,7 +921,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/shapes/Circle.ts",
@@ -932,7 +932,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/shapes/Ellipse.ts",
@@ -943,7 +943,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/shapes/Line.ts",
@@ -954,7 +954,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/shapes/Rect.ts",
@@ -965,7 +965,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "kernel",
       "file": "Phase2/PART_TWO/src/model/shapes/Text.ts",
@@ -976,7 +976,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/Plugin.ts",
@@ -987,7 +987,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/box/BoxPlugin.ts",
@@ -998,7 +998,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/builtin/BuiltinShapePlugin.ts",
@@ -1009,7 +1009,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/builtin/ModifiedStarPlugin.ts",
@@ -1020,7 +1020,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/CommandPlugin.ts",
@@ -1031,7 +1031,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/DirCommand.ts",
@@ -1042,7 +1042,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/DirPlugin.ts",
@@ -1053,7 +1053,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/NodeDirectoryAdapter.ts",
@@ -1064,7 +1064,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/StatsCommand.ts",
@@ -1075,7 +1075,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/commands/StatsPlugin.ts",
@@ -1086,7 +1086,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "cli",
       "category": "plugins",
       "file": "Phase2/PART_TWO/src/plugins/demo/PingPlugin.ts",
@@ -1097,7 +1097,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_extension",
       "file": "Phase2/PART_ONE/src/extension.ts",
@@ -1108,7 +1108,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_extension",
       "file": "Phase2/PART_ONE/src/svgDocumentSymbolProvider.ts",
@@ -1119,7 +1119,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_extension",
       "file": "Phase2/PART_ONE/src/svgFileDecorationProvider.ts",
@@ -1130,7 +1130,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_tests",
       "file": "Phase2/PART_ONE/src/test/integration/runTest.ts",
@@ -1141,7 +1141,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_tests",
       "file": "Phase2/PART_ONE/src/test/integration/suite/capture.test.ts",
@@ -1152,7 +1152,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_tests",
       "file": "Phase2/PART_ONE/src/test/integration/suite/extension.test.ts",
@@ -1163,7 +1163,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_tests",
       "file": "Phase2/PART_ONE/src/test/integration/suite/index.ts",
@@ -1174,7 +1174,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_tests",
       "file": "Phase2/PART_ONE/src/test/unit/xmlParser.test.ts",
@@ -1185,7 +1185,7 @@
     },
     {
       "side": "to",
-      "revision": "7339731be05363a098df8cc7b2e0e46cd34b6185",
+      "revision": "9c600f84506fbe47c97b772ebb94997b30b6bb46",
       "scope": "vscode",
       "category": "vscode_extension",
       "file": "Phase2/PART_ONE/src/xmlParser.ts",
