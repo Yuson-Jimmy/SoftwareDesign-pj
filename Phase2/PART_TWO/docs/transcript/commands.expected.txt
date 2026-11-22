@@ -1,0 +1,7 @@
+canvas 800x600 created
+rect#r created
+box#b created (g#b + rect#b-rect + text#b-label)
+rect: 2  text: 1  (total 3, containers 1)
+[DIR]  alpha
+[DIR]  zeta
+[FILE]  a.txt

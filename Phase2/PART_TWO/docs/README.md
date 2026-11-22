@@ -17,17 +17,24 @@
 
 ## 3. 默认装配与内核独立性
 
-`app/Application.ts` 是唯一装配入口：
+`app/Application.ts` 是唯一组合根，`Application.installPlugin` 是方式 A/B 共用的唯一安装入口：
 
-1. `createApplication(plugins)` 创建空的 ShapeFactory、AttributeRegistry、装饰器数组及 Phase1 默认命令注册表；
-2. 遍历插件并分别注册四类扩展；
-3. 构造 EditorModel 与 CommandsExecutor；
-4. `createDefaultApplication()` 分别注册内置六图形、box、modified-star、stats、dir；
+1. `createApplication` 创建空注册表和 `PluginRegistrar`；
+2. 插件通过 `PluginContext` 暂存 shapes、commands、decorators、attributes；
+3. 注册器检查同类重名及 `package.json#contributes` 与实际注册集合，成功后才一次提交；失败不会留下任何暂存扩展；
+4. `createDefaultApplication()` 以代码显式装入内置六图形、box、modified-star、stats、dir；
 5. `Repl` 只接收 Application，不直接 new 图形或插件。
 
-`createApplication([])` 可启动并完成 `init`，但没有图形和可选命令；`createApplication([builtinShapePlugin])` 提供无第三方框架的 Phase1 行为。这说明启动不依赖任何动态插件加载框架，内置实现也只是普通的显式注册。
+`createApplication([])` 可启动并完成 `init`，但没有图形和可选命令；`createApplication([builtinShapePlugin])` 提供无第三方框架的 Phase1 行为。
 
-`statsPlugin` 与 `createDirPlugin()` 是两个独立插件包，可以分别加入或移出代码装配数组。另一种方式是 JSON 配置装配：默认 `plugins.json` 的 `plugins` 数组列出同名插件，`createConfiguredApplication(path)` 经 `PluginCatalog` 创建相同实例。直接启动 CLI 时可设置 `SVG_EDITOR_CONFIG` 指向配置文件；不设置时使用代码装配。两种方式复用同一个 StatsCommand、DirCommand、DirectoryPort 和 NodeDirectoryAdapter。
+方式 B 使用仓库根的 `plugins.config.json`，每项包含 `module`、可选 `options` 和可选 `enabled`。配置加载器位于装配层，不含具体插件导入、名称映射或条件分支；相对模块以配置文件目录为基准，包名按 Node 规则解析。`options` 原样传给 `activate(context, options)`，`enabled: false` 完全跳过。按数组顺序加载，单插件失败会输出规定的 `error:` 文本并继续；配置非法则回退默认能力。
+
+```bash
+npm run cli                                  # 方式 A
+npm run cli -- --config plugins.config.json  # 方式 B
+```
+
+CLI 配置入口先构建再加载仓库内包的 `dist` 文件，也兼容 `SVG_EDITOR_CONFIG`。完整事务与模块解析决策见 [ADR-004](adr/004-dual-plugin-assembly.md)。
 
 ## 4. box 复合图形
 
@@ -88,4 +95,6 @@ npm run test:all
 
 `src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。属性专项还覆盖普通白名单回退、多子字段单次撤销、重复处理器拒绝和故障后的文档/历史回滚。
 
-最终验证：strict 类型检查通过，**28 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现；`treeLabelPlugin.test.ts` 的 4 项测试独立覆盖 Phase1 树基线、新建/保存/编辑/undo/redo 状态机、祖先传播和插件实例隔离。
+`configLoading.test.ts` 另覆盖相对模块解析、options、禁用项、模块找不到、无默认导出、清单不符、激活失败、依赖求值失败、重复注册、失败回滚与后续加载、非法配置回退。`docs/transcript` 中三组输入/预期输出分离的会话分别经 A/B 执行并逐字节一致；真实 CLI 的 stdin/stdout 冒烟比较也无差异。
+
+最终验证：strict 类型检查通过，**32 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现；`treeLabelPlugin.test.ts` 的 4 项测试独立覆盖 Phase1 树基线、新建/保存/编辑/undo/redo 状态机、祖先传播和插件实例隔离。

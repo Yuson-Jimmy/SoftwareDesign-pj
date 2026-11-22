@@ -4,7 +4,7 @@
   "private": true,
   "description": "Phase2 PART_TWO: plugin-oriented SVG editor CLI",
   "scripts": {
-    "cli": "tsx src/cli/Repl.ts",
+    "cli": "npm run build && node dist/cli/Repl.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/test/**/*.test.js",

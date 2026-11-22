@@ -57,6 +57,7 @@ export class Repl {
 }
 
 if (require.main === module) {
-  const configPath = process.env.SVG_EDITOR_CONFIG;
+  const args = process.argv.slice(2);
+  const configPath = args[0] === '--config' && args[1] ? args[1] : process.env.SVG_EDITOR_CONFIG;
   new Repl(configPath ? createConfiguredApplication(configPath) : createDefaultApplication()).run();
 }

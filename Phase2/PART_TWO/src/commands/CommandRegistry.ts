@@ -29,6 +29,10 @@ export class CommandRegistry {
     this.commands.set(command.name, command);
   }
 
+  has(name: string): boolean {
+    return this.commands.has(name);
+  }
+
   resolve(name: string): Command {
     const command = this.commands.get(name);
     if (!command) throw new CommandError(`unknown command: ${name}`);

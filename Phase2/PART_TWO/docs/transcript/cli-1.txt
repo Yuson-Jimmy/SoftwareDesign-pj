@@ -1,0 +1,6 @@
+# Phase 1 basic session
+init 800 600
+create rect r1 10 20 30 40 red
+create circle c1 100 100 20
+move r1 5 5
+tree

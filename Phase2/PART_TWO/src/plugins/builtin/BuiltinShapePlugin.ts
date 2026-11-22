@@ -112,3 +112,5 @@ export const builtinShapePlugin: Plugin = {
   name: 'builtin-shapes',
   shapes: builtinShapeProviders,
 };
+
+export default builtinShapePlugin;

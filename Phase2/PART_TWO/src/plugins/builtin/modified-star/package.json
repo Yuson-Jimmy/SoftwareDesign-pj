@@ -1,0 +1,7 @@
+{
+  "name": "@svgframe/plugin-tree-star",
+  "main": "../../../../dist/plugins/builtin/ModifiedStarPlugin.js",
+  "contributes": {
+    "decorators": ["modified-star"]
+  }
+}

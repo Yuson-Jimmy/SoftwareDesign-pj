@@ -10,6 +10,8 @@ export interface AttributeChange {
 
 /** 属性扩展点：shapeType + attribute 是唯一键，apply 返回事务成功后的变更闭包。 */
 export interface AttributeHandler {
+  /** 稳定的插件注册名；缺省为 shapeType.attribute。 */
+  readonly name?: string;
   readonly shapeType: string;
   readonly attribute: string;
   apply(shape: Shape, value: string): AttributeChange;
@@ -22,6 +24,13 @@ export class AttributeRegistry {
     const key = `${handler.shapeType}.${handler.attribute}`;
     if (this.handlers.has(key)) throw new ModelError(`attribute handler already registered: ${key}`);
     this.handlers.set(key, handler);
+  }
+
+  has(name: string): boolean {
+    for (const handler of this.handlers.values()) {
+      if ((handler.name ?? `${handler.shapeType}.${handler.attribute}`) === name) return true;
+    }
+    return false;
   }
 
   /** 返回 undefined 才允许走 Phase1 白名单；处理器抛错绝不降级重试。 */

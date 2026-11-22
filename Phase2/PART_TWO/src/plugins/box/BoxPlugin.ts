@@ -96,6 +96,7 @@ export const boxPlugin: Plugin = {
   }],
   attributes: [
     {
+      name: 'box-fill',
       shapeType: 'box',
       attribute: 'fill',
       apply(shape, value) {
@@ -112,6 +113,7 @@ export const boxPlugin: Plugin = {
       },
     },
     {
+      name: 'box-label',
       shapeType: 'box',
       attribute: 'label',
       apply(shape, value) {
@@ -133,3 +135,5 @@ export const boxPlugin: Plugin = {
     decorations: (shape) => shape.type === 'box' ? ['(box)'] : [],
   }],
 };
+
+export default boxPlugin;

@@ -6,3 +6,5 @@ export const statsPlugin: Plugin = {
   name: 'stats',
   commands: [new StatsCommand()],
 };
+
+export default statsPlugin;

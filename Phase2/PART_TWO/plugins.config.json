@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    { "module": "./src/plugins/builtin" },
+    { "module": "./src/plugins/box" },
+    { "module": "./src/plugins/builtin/modified-star" },
+    { "module": "./src/plugins/commands/stats" },
+    { "module": "./src/plugins/commands/dir" }
+  ]
+}

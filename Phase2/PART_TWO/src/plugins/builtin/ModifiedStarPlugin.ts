@@ -41,3 +41,5 @@ export function createModifiedStarPlugin(): Plugin {
 
 /** 默认装配入口；每个 Application 也应通过工厂创建独立实例。 */
 export const modifiedStarPlugin: Plugin = createModifiedStarPlugin();
+
+export default createModifiedStarPlugin();

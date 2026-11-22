@@ -122,7 +122,7 @@ test('multiple handlers for the same shape and attribute are rejected explicitly
   };
   assert.throws(
     () => createApplication([{ name: 'a', attributes: [handler] }, { name: 'b', attributes: [handler] }]),
-    /attribute handler already registered: rect.fill/,
+    /duplicate registration: attributes\/rect.fill/,
   );
 });
 

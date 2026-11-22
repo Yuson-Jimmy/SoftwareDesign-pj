@@ -1,0 +1,9 @@
+{
+  "name": "@svgframe/plugin-shape-box",
+  "main": "../../../dist/plugins/box/BoxPlugin.js",
+  "contributes": {
+    "shapes": ["box"],
+    "attributes": ["box-fill", "box-label"],
+    "decorators": ["box"]
+  }
+}

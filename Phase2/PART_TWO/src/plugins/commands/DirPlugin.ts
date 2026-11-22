@@ -9,3 +9,5 @@ export function createDirPlugin(directory: DirectoryPort = new NodeDirectoryAdap
     commands: [new DirCommand(directory)],
   };
 }
+
+export default createDirPlugin();

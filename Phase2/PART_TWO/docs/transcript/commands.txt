@@ -1,0 +1,6 @@
+# stats and fixed-working-directory dir session
+init
+create rect r 0 0 10 10
+create box b 20 20 30 30 "box"
+stats
+dir

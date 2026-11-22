@@ -1,0 +1,7 @@
+canvas 800x600 created
+rect#r1 created
+circle#c1 created
+rect#r1 moved to (15,25)
+svg (800x600) *
+├── rect#r1    x=15 y=25 w=30 h=40 fill=red *
+└── circle#c1  cx=100 cy=100 r=20 *

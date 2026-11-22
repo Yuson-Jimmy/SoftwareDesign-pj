@@ -9,7 +9,8 @@ import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
 import { createModifiedStarPlugin } from '../plugins/builtin/ModifiedStarPlugin';
 import { createDirPlugin } from '../plugins/commands/DirPlugin';
 import { statsPlugin } from '../plugins/commands/StatsPlugin';
-import type { Plugin } from '../plugins/Plugin';
+import type { Plugin, PluginManifest, PluginOptions } from '../plugins/Plugin';
+import { PluginRegistrar } from './PluginRegistrar';
 
 export interface Application {
   readonly factory: ShapeFactory;
@@ -17,27 +18,34 @@ export interface Application {
   readonly registry: CommandRegistry;
   readonly executor: CommandsExecutor;
   readonly model: EditorModel;
+  installPlugin(plugin: Plugin, manifest?: PluginManifest, options?: PluginOptions): string | null;
 }
 
-/** 唯一装配点：插件只贡献扩展，内核与 REPL 不识别具体插件。 */
+/** 唯一组合根：代码装配与配置装配最终都调用同一个 installPlugin。 */
 export function createApplication(plugins: Plugin[]): Application {
   const factory = new ShapeFactory();
   const attributes = new AttributeRegistry();
   const registry = createDefaultRegistry();
   const decorators: TreeDecorator[] = [];
+  const registrar = new PluginRegistrar(factory, attributes, registry, decorators);
+  const model = new EditorModel(factory, attributes, decorators);
+  const application: Application = {
+    factory,
+    attributes,
+    registry,
+    executor: new CommandsExecutor(model),
+    model,
+    installPlugin: (plugin, manifest, options) => registrar.install(plugin, manifest, options),
+  };
 
   for (const plugin of plugins) {
-    for (const provider of plugin.shapes ?? []) factory.register(provider);
-    for (const command of plugin.commands ?? []) registry.register(command);
-    for (const decorator of plugin.treeDecorators ?? []) decorators.push(decorator);
-    for (const handler of plugin.attributes ?? []) attributes.register(handler);
+    const error = application.installPlugin(plugin);
+    if (error) throw new Error(error);
   }
-
-  const model = new EditorModel(factory, attributes, decorators);
-  return { factory, attributes, registry, executor: new CommandsExecutor(model), model };
+  return application;
 }
 
-/** 默认装配：Phase1 六图形和命令 + 本阶段 box/stats/dir/树装饰。 */
+/** 方式 A：显式导入和实例化，新增插件只改这一处并重新构建。 */
 export function createDefaultApplication(): Application {
   return createApplication([
     builtinShapePlugin,
