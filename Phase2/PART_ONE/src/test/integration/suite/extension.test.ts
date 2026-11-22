@@ -30,7 +30,7 @@ suite('SVG extension', () => {
     assert.equal(await provider.provideFileDecoration(fixture('directory.svg'), token), undefined);
   });
 
-  test('provides nested native symbols and source navigation ranges', async () => {
+  test('provides the root, nested containers, leaves, and id-less labels', async () => {
     const document = await vscode.workspace.openTextDocument(fixture('example.svg'));
     const symbols = new SvgDocumentSymbolProvider().provideDocumentSymbols(document, token);
     assert.equal(symbols.length, 1);
@@ -38,7 +38,9 @@ suite('SVG extension', () => {
     const flow = symbols[0].children[0];
     assert.equal(flow.name, 'g#flow');
     assert.deepEqual(flow.children.map((symbol) => symbol.name), ['rect#start', 'g#nested', 'circle#done']);
-    assert.equal(flow.children[1].children[0].name, 'text');
+    const text = flow.children[1].children[0];
+    assert.equal(text.name, 'text');
+    assert.equal(text.name.includes('#'), false, 'Elements without id must not receive a generated label');
     assert.equal(flow.children[0].selectionRange.start.line, 2);
     assert.equal(flow.children[0].selectionRange.start.character, 4);
   });
@@ -65,7 +67,7 @@ suite('SVG extension', () => {
     assert.equal(vscode.window.activeTextEditor?.document.uri.toString(), uri.toString());
   });
 
-  test('reflects edits and safely clears the outline for incomplete XML', async () => {
+  test('refreshes symbols from edited document text', async () => {
     const document = await vscode.workspace.openTextDocument({
       language: 'xml',
       content: '<svg><g id="before"><rect/></g></svg>',
@@ -77,9 +79,20 @@ suite('SVG extension', () => {
     const updated = provider.provideDocumentSymbols(document, token);
     assert.equal(updated[0].children[0].name, 'g#after');
     assert.deepEqual(updated[0].children[0].children.map((symbol) => symbol.name), ['rect#changed', 'text']);
+  });
 
-    await replaceAll(document, '<svg><g id="unfinished">');
+  test('clears incomplete XML without throwing and recovers after a valid edit', async () => {
+    const document = await vscode.workspace.openTextDocument({
+      language: 'xml',
+      content: '<svg><g id="unfinished">',
+    });
+    const provider = new SvgDocumentSymbolProvider();
     assert.doesNotThrow(() => provider.provideDocumentSymbols(document, token));
     assert.deepEqual(provider.provideDocumentSymbols(document, token), []);
+
+    await replaceAll(document, '<svg><g id="recovered"><rect id="restored"/></g></svg>');
+    const recovered = provider.provideDocumentSymbols(document, token);
+    assert.equal(recovered[0].children[0].name, 'g#recovered');
+    assert.equal(recovered[0].children[0].children[0].name, 'rect#restored');
   });
 });

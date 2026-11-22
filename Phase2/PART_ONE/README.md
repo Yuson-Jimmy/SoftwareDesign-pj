@@ -24,4 +24,4 @@ npm run test:integration
 
 如本机已经安装 VSCode，可设置 `VSCODE_EXECUTABLE_PATH` 指向 `Code.exe`，避免测试工具下载 VSCode。
 
-完整的安装说明、真实运行截图、设计模式分析、Phase1 复用评估及测试覆盖见 [doc/README.md](doc/README.md)。
+完整的安装说明、真实运行截图、设计模式分析、Phase1 复用评估及测试覆盖见 [docs/README.md](docs/README.md)。

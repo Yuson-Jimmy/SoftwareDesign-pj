@@ -3,6 +3,6 @@
 src/**
 node_modules/**
 fixtures/**
-doc/**
+docs/**
 **/*.map
 **/tsconfig.json

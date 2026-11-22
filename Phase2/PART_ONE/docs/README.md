@@ -9,7 +9,7 @@
 - `fixtures/example.svg`：包含嵌套分组、有 id 和无 id 元素的示例。
 - `src/test/unit/`：解析器单元测试。
 - `src/test/integration/`：真实 VSCode 扩展宿主集成测试。
-- `doc/images/`：从实际扩展开发宿主采集的两张演示截图。
+- `docs/images/`：从实际扩展开发宿主采集的两张演示截图。
 
 实现不修改 SVG 文件名或文件内容，不提供图形预览，也不进行完整 SVG 规范校验。
 
@@ -136,41 +136,79 @@ Phase1 `SvgReader` 中的递归下降解析、元素/属性扫描、注释与声
 
 ### 7.1 命令
 
+在 `Phase2/PART_ONE` 目录运行完整测试：
+
 ```bash
-npm run test:unit
-npm run test:integration
+npm run test:all
 ```
 
-`test:integration` 默认下载测试用 VSCode；也可指定现有安装：
+也可分别运行 `npm run test:unit` 和 `npm run test:integration`。集成测试默认下载测试用 VSCode；使用本机已有安装时可指定可执行文件：
 
 ```powershell
 $env:VSCODE_EXECUTABLE_PATH = "C:\\path\\to\\Code.exe"
 npm run test:integration
 ```
 
-测试启动器会清除父进程可能注入的 `ELECTRON_RUN_AS_NODE`，防止 VSCode 被误作为 Node 启动。
+测试启动器会清除父进程可能注入的 `ELECTRON_RUN_AS_NODE`，防止 VSCode 被误作为 Node 启动。集成测试在真实扩展宿主中运行，不只是对解析函数做模拟断言。
 
-### 7.2 覆盖矩阵
+### 7.2 最低要求覆盖矩阵
 
-| 要求 | 验证位置 |
+| 要求 | 验证位置与断言 |
 | --- | --- |
-| 嵌套分组、根和叶子 | `xmlParser.test.ts` 的嵌套测试；`extension.test.ts` 的原生符号测试 |
-| 无 id 元素 | 单元测试确认不生成 id；集成测试确认节点名为 `text` |
-| 点击定位 | 集成测试检查 `rect#start` 的 `selectionRange` 位于第 3 行及正确列 |
-| 编辑更新 | 集成测试把 `g#before` 改为 `g#after`，新增 `rect#changed` 与 `text` 后重新读取符号 |
-| 不完整 XML | 单元测试覆盖未闭合、错配、未终止属性/注释；集成测试确认提供者返回 `[]` 且不抛错 |
+| 嵌套分组 | `xmlParser.test.ts` 验证解析树的父子关系；`extension.test.ts` 验证完整层级为 `svg → g#flow → rect#start / g#nested / circle#done`，且 `g#nested` 包含 `text` |
+| 无 id 元素 | 单元测试确认 `id` 保持为 `undefined`；集成测试确认叶子名称为 `text`，且没有虚构 `#id` 后缀 |
+| 编辑更新 | 集成测试通过 `WorkspaceEdit` 将 `g#before` 攓为 `g#after`，并确认新增 `rect#changed` 与无 id 的 `text`；提供者重新读取当前文档文本 |
+| 不完整 XML | 单元测试覆盖未闭合、错配、未终止属性和注释；集成测试确认提供者返回 `[]` 且不抛错，随后修复文档并确认大纲恢复 |
+| 根、容器和叶子 | 集成测试分别断言根 `svg`、容器 `g#flow` / `g#nested` 和叶子 `rect#start` / `circle#done` / `text` |
+| 标签与点击定位 | 集成测试检查 `标签名#id` 格式，并确认 `rect#start.selectionRange` 从第 3 行、第 4 列开始（行列均为 0 起始） |
+
+### 7.3 其他回归验证
+
+| 场景 | 验证位置与断言 |
+| --- | --- |
 | SVG 标记 | 集成测试确认 `example.svg` 的 badge 恰为 `[]` |
 | 非 SVG 与目录 | 集成测试确认 `plain.txt` 和 `directory.svg/` 无装饰 |
-| VSCode 注册 | 集成测试通过 `vscode.executeDocumentSymbolProvider` 验证真实注册调用链 |
-| 默认文本导航 | 集成测试通过 `vscode.open` 验证打开 SVG 后存在对应 `activeTextEditor`，不会进入 Image Preview |
+| VSCode 注册 | 通过 `vscode.executeDocumentSymbolProvider` 验证真实注册调用链，而不只直接实例化提供者 |
+| 默认文本导航 | 通过 `vscode.open` 打开 SVG，确认 `activeTextEditor` 对应该文件，避免大纲点击后进入 Image Preview |
 
-本次验证结果：单元测试 **6 项通过**；真实扩展宿主集成测试 **5 项通过**。另有 1 个默认跳过的桌面截图场景，仅在设置 `SVG_CAPTURE_DIR` 时运行；截图采集运行时该场景也执行通过。
+本次验证结果：单元测试 **6 项通过**；真实扩展宿主集成测试 **6 项通过**。另有 1 个默认跳过的桌面截图场景，仅在设置 `SVG_CAPTURE_DIR` 时运行，不计入上述通过数量。
 
-## 8. AI 协作检查与修正记录
+## 8. Debug：点击大纲跳转到 Image Preview
+
+### 8.1 症状与复现
+
+在 Outline 中点击 `rect#start` 时，VSCode 没有留在文本编辑器定位源码，而是切换到 Image Preview。回归测试通过 `vscode.open` 打开同一 SVG 资源后检查 `activeTextEditor`；修复前该值为 `undefined`，说明活动编辑器不是文本编辑器。
+
+### 8.2 根因
+
+大纲导航按资源的默认编辑器关联打开 URI。SVG 同时受文本编辑器和内置图像预览支持，若默认关联指向图像预览，导航即使携带符号范围，也会先进入非文本编辑器，因而无法显示源码定位。问题不在 XML 解析树或 `selectionRange` 的计算。
+
+### 8.3 修复
+
+在 `package.json` 中加入扩展贡献的默认编辑器关联：
+
+```json
+"contributes": {
+  "configurationDefaults": {
+    "workbench.editorAssociations": {
+      "*.svg": "default"
+    }
+  }
+}
+```
+
+这里 `default` 表示 VSCode 内置文本编辑器。该配置不会在运行时改写用户设置，仍可通过 **Open With... → Image Preview** 主动查看图像；用户显式配置的其他编辑器关联优先。安装或修改扩展后需重新加载窗口/重启扩展开发宿主，使新的默认关联生效。
+
+### 8.4 回归验证
+
+`extension.test.ts` 中的 `opens SVG symbol navigation in the text editor instead of Image Preview` 用例关闭已有编辑器，通过 `vscode.open` 打开 `example.svg`，并断言活动文本编辑器的 URI 与目标文件一致。修复前该用例失败，加入默认关联后通过；源码范围断言继续确认 `rect#start` 对应第 3 行的开始标签。
+
+## 9. AI 协作检查与修正记录
 
 - 检查了“只按 `.svg` 后缀标记”的建议，补充 `workspace.fs.stat()`，避免给名为 `directory.svg` 的目录加标记。
 - 检查了按 `language: svg` 注册的建议，改用文件模式选择器，兼容 VSCode 将 SVG 识别为 XML 的行为。
 - 没有直接复用 Phase1 私有解析器；根据大纲定位需求增加源码偏移，并保留无 id 状态。
 - 将解析异常限制在提供者内部并返回空数组，避免编辑中间态使扩展宿主崩溃。
 - 集成测试初次把示例缩进列号写错，依据真实失败输出修正为第 3 行第 4 列（0 起始），而不是修改源码迎合测试。
+- 修复 Image Preview 跳转问题后，保留真实 VSCode 导航回归测试，防止默认编辑器关联被后续改动移除。
 - 实际检查截图时发现预览页、空白窗口和大纲高度问题，最终只采用文本编辑器中原生 Outline 与源码同时可见的真实截图。
