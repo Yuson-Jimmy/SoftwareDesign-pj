@@ -1,0 +1,85 @@
+@startuml
+title Phase 2 — 插件式 CLI 模块依赖
+skinparam linetype ortho
+
+package "kernel: cli" {
+  [Repl]
+  [Parser]
+}
+package "kernel: commands" {
+  [CommandRegistry]
+  [Phase1 Commands]
+}
+package "kernel: executor" {
+  [CommandsExecutor]
+}
+package "kernel: model + extension points" {
+  [EditorModel]
+  [DisplayView]
+  [Document]
+  [ShapeFactory]
+  [AttributeRegistry]
+  [ShapeProvider]
+  [AttributeHandler]
+  [TreeDecorator]
+  [Command]
+}
+package "assembly" {
+  [Application / PluginRegistrar]
+  [ConfiguredApplication]
+  [PluginCatalog]
+}
+package "plugins" {
+  [BuiltinShapePlugin]
+  [BoxPlugin]
+  [StatsPlugin]
+  [DirPlugin]
+  [ModifiedStarPlugin]
+  [NodeDirectoryAdapter]
+}
+package "host" {
+  [Node fs]
+}
+
+[Repl] --> [Parser]
+[Repl] --> [CommandRegistry]
+[CommandRegistry] --> [Phase1 Commands]
+[Phase1 Commands] --> [CommandsExecutor]
+[CommandsExecutor] --> [EditorModel]
+[EditorModel] --> [Document]
+[EditorModel] --> [ShapeFactory]
+[EditorModel] --> [AttributeRegistry]
+[EditorModel] --> [DisplayView]
+[ShapeFactory] --> [ShapeProvider]
+[AttributeRegistry] --> [AttributeHandler]
+[DisplayView] --> [TreeDecorator]
+[Phase1 Commands] --> [Command]
+
+[Application / PluginRegistrar] --> [ShapeProvider]
+[Application / PluginRegistrar] --> [AttributeHandler]
+[Application / PluginRegistrar] --> [TreeDecorator]
+[Application / PluginRegistrar] --> [Command]
+[ConfiguredApplication] --> [PluginCatalog]
+[ConfiguredApplication] --> [Application / PluginRegistrar]
+[Application / PluginRegistrar] ..> [BuiltinShapePlugin] : 方式 A 显式实例化
+[Application / PluginRegistrar] ..> [BoxPlugin]
+[Application / PluginRegistrar] ..> [StatsPlugin]
+[Application / PluginRegistrar] ..> [DirPlugin]
+[Application / PluginRegistrar] ..> [ModifiedStarPlugin]
+[PluginCatalog] ..> [BoxPlugin] : 方式 B 动态解析（无具名导入）
+
+[BuiltinShapePlugin] ..> [ShapeProvider]
+[BoxPlugin] ..> [ShapeProvider]
+[BoxPlugin] ..> [AttributeHandler]
+[BoxPlugin] ..> [TreeDecorator]
+[StatsPlugin] ..> [Command]
+[DirPlugin] ..> [Command]
+[ModifiedStarPlugin] ..> [TreeDecorator]
+[DirPlugin] --> [NodeDirectoryAdapter]
+[NodeDirectoryAdapter] --> [Node fs]
+
+note bottom of [PluginCatalog]
+配置 loader 只按字符串解析模块；
+不含具体插件 import、名称映射或 switch。
+end note
+@enduml

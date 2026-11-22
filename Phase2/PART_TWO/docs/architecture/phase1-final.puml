@@ -1,0 +1,47 @@
+@startuml
+title Phase 1 final — CLI 模块依赖
+skinparam linetype ortho
+
+package "cli" {
+  [Repl]
+  [Parser]
+}
+package "commands" {
+  [CommandRegistry]
+  [Concrete Commands]
+}
+package "editor" {
+  [Editor]
+}
+package "io" {
+  [SvgReader]
+  [SvgWriter]
+}
+package "model" {
+  [Document]
+  [ShapeFactory]
+  [Shape / Group]
+  [Concrete Shapes]
+}
+
+[Repl] --> [Parser]
+[Repl] --> [CommandRegistry]
+[CommandRegistry] --> [Concrete Commands]
+[Concrete Commands] --> [Editor]
+[Concrete Commands] --> [CommandRegistry] : undo/redo/help
+[Editor] --> [SvgReader]
+[Editor] --> [SvgWriter]
+[Editor] --> [Document]
+[Editor] --> [ShapeFactory]
+[SvgReader] --> [ShapeFactory]
+[SvgReader] --> [Document]
+[SvgWriter] --> [Document]
+[ShapeFactory] --> [Concrete Shapes]
+[Document] --> [Shape / Group]
+[Shape / Group] <|-- [Concrete Shapes]
+
+note right of [Editor]
+会话状态、编辑操作与 IO 集中；
+新增领域能力需要修改既有模块。
+end note
+@enduml

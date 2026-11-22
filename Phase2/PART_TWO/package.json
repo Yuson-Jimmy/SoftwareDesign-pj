@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/test/**/*.test.js",
-    "test:all": "npm run typecheck && npm test"
+    "test:all": "npm run typecheck && npm test",
+    "metrics": "node scripts/metrics.js --from final --to HEAD"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

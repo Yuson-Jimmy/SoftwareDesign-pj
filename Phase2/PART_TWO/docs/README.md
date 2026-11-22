@@ -97,4 +97,26 @@ npm run test:all
 
 `configLoading.test.ts` 另覆盖相对模块解析、options、禁用项、模块找不到、无默认导出、清单不符、激活失败、依赖求值失败、重复注册、失败回滚与后续加载、非法配置回退。`docs/transcript` 中三组输入/预期输出分离的会话分别经 A/B 执行并逐字节一致；真实 CLI 的 stdin/stdout 冒烟比较也无差异。
 
-最终验证：strict 类型检查通过，**32 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现；`treeLabelPlugin.test.ts` 的 4 项测试独立覆盖 Phase1 树基线、新建/保存/编辑/undo/redo 状态机、祖先传播和插件实例隔离。
+最终验证：strict 类型检查通过，**33 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现；`treeLabelPlugin.test.ts` 的 4 项测试独立覆盖 Phase1 树基线、新建/保存/编辑/undo/redo 状态机、祖先传播和插件实例隔离。
+
+## 8. 配置文件格式与交付验收
+
+```json
+{
+  "plugins": [
+    { "module": "./src/plugins/builtin" },
+    { "module": "./src/plugins/demo", "options": { "text": "configured" } },
+    { "module": "@scope/optional-plugin", "enabled": false }
+  ]
+}
+```
+
+`module` 为必填非空字符串；`options` 为可选对象，原样传给 `activate(context, options)`；`enabled` 为可选布尔值，`false` 完全跳过。模块按数组顺序加载。包内 `package.json` 的 `contributes` 声明 shapes/commands/decorators/attributes 名称数组，缺省为空；安装器在 activate 后、真实提交前比较声明与暂存注册集合。
+
+交付索引见 [doc/README.md](../doc/README.md)。其他验收材料：
+
+- [验收矩阵与证据](acceptance.md)
+- [Phase 1 → Phase 2 迭代报告](iteration-report.md)
+- PlantUML：[final](architecture/phase1-final.puml) / [Phase 2](architecture/phase2-plugins.puml)
+- [自动历史指标](metrics/summary.md)；重新生成：`npm run metrics`，标签发布后：`npm run metrics -- --to p2`
+- ADR：[属性事务](adr/001-attribute-handler-transactions.md)、[box 读回与降级](adr/002-box-composite-invariants.md)、[dirty 与祖先传播](adr/003-tree-label-state-and-order.md)、[双装配与清单校验](adr/004-dual-plugin-assembly.md)
