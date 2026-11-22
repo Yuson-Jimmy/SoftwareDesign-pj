@@ -1,0 +1,7 @@
+{
+  "name": "@svgframe/plugin-ping-demo",
+  "main": "../../../dist/plugins/demo/PingPlugin.js",
+  "contributes": {
+    "commands": ["ping"]
+  }
+}

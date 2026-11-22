@@ -9,6 +9,7 @@ import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
 import { createModifiedStarPlugin } from '../plugins/builtin/ModifiedStarPlugin';
 import { createDirPlugin } from '../plugins/commands/DirPlugin';
 import { statsPlugin } from '../plugins/commands/StatsPlugin';
+import { createPingPlugin, pingManifest } from '../plugins/demo/PingPlugin';
 import type { Plugin, PluginManifest, PluginOptions } from '../plugins/Plugin';
 import { PluginRegistrar } from './PluginRegistrar';
 
@@ -47,11 +48,14 @@ export function createApplication(plugins: Plugin[]): Application {
 
 /** 方式 A：显式导入和实例化，新增插件只改这一处并重新构建。 */
 export function createDefaultApplication(): Application {
-  return createApplication([
+  const application = createApplication([
     builtinShapePlugin,
     boxPlugin,
     createModifiedStarPlugin(),
     statsPlugin,
     createDirPlugin(),
   ]);
+  const error = application.installPlugin(createPingPlugin({ text: 'configured' }), pingManifest);
+  if (error) throw new Error(error);
+  return application;
 }
