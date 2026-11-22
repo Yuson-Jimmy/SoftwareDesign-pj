@@ -184,6 +184,7 @@ export class SvgReader {
       if (shape instanceof Group) {
         for (const child of el.children) build(child, shape);
       }
+      this.factory.validate(type, shape);
     };
 
     for (const child of rootEl.children) build(child, doc.root);

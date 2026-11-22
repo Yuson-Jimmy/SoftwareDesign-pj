@@ -31,10 +31,12 @@
 
 ## 4. box 复合图形
 
-- `create box <id> <x> <y> <w> <h> "<标题>"` 创建一个插件所有的 Group，内部 id 为 `<id>-rect` 和 `<id>-label`；创建回显为 `box#id created`。
+- `create box <id> <x> <y> <w> <h> "<标题>"` 创建一个插件所有的 Group，内部 id 为 `<id>-rect` 和 `<id>-label`；创建回显包含完整派生结构。
 - Box 继承 Group，因此移动、缩放、删除、嵌套、加入其他组均复用 Composite 路径；`composite=true` 使 `ungroup` 报 `cannot ungroup composite shape`。
-- `(box)` 是 TreeDecorator，不让 DisplayView 判断 Box 类；`fill`、`label` 是 AttributeHandler，不向 Shape 基类添加属性分支。
+- `(box)` 是 TreeDecorator，不让 DisplayView 判断 Box 类；`fill`、`label` 是 AttributeHandler，不向 Shape 基类添加属性分支，并提供 Phase1 会话规定的领域回显。
 - 序列化为普通 `<g data-kind="box">` 和 rect/text。注册 box 时恢复复合语义；未注册时按普通 `g` 降级，内容不丢失。
+- 创建前检查整棵新子树的 id，派生 id 冲突不留下任何部件。安装插件后读到缺失/错误部件会拒绝整个 read 并保留原文档；重复 id 同样拒绝。
+- 必要子部件带通用 structuralPart 标记，普通 delete/group/addto 不得拆走；整个 box 的删除、移动和编组仍可用。详见 [ADR-002](adr/002-box-composite-invariants.md)。
 - 新建及 move/scale/set/group 的目标具有 `*`；save 后清除修改标记。撤销 move/scale/set 恢复此前的标记状态。
 
 ### 4.1 属性事务契约
@@ -80,4 +82,4 @@ npm run test:all
 
 `src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。属性专项还覆盖普通白名单回退、多子字段单次撤销、重复处理器拒绝和故障后的文档/历史回滚。
 
-最终验证：strict 类型检查通过，**15 项测试全部通过，0 失败**。
+最终验证：strict 类型检查通过，**24 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现。

@@ -2,6 +2,8 @@ import { ModelError, Shape } from './Shape';
 
 /** 一次属性修改的完整逆操作；可封装多个子部件，整体构成一个 undo 单元。 */
 export interface AttributeChange {
+  readonly message?: string;
+  readonly undoMessage?: string;
   undo(): void;
   redo(): void;
 }

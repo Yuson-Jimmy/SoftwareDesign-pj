@@ -51,21 +51,21 @@ test('absent plugins degrade to an empty provider set and unknown optional comma
 test('box provider creates a composite tree and its decorator appends (box)', () => {
   const { run } = cli();
   run('init');
-  assert.equal(run('create box n1 120 100 160 60 "开始"'), 'box#n1 created');
+  assert.equal(run('create box n1 120 100 160 60 "开始"'), 'box#n1 created (g#n1 + rect#n1-rect + text#n1-label)');
   const tree = run('tree n1');
   assert.match(tree ?? '', /^g#n1 \(box\) \*/);
   assert.match(tree ?? '', /rect#n1-rect\s+x=120 y=100 w=160 h=60 fill=#4a90d9/);
   assert.match(tree ?? '', /text#n1-label\s+\(140,135\) "开始"/);
   assert.equal(run('ungroup n1'), 'error: cannot ungroup composite shape: n1');
-  assert.equal(run('create box n2 1 2 3 4 "嵌套" in n1'), 'box#n2 created in g#n1');
+  assert.equal(run('create box n2 1 2 3 4 "嵌套" in n1'), 'box#n2 created in g#n1 (g#n2 + rect#n2-rect + text#n2-label)');
 });
 
 test('box attribute handlers propagate fill and label with undo/redo', () => {
   const { run } = cli();
   run('init');
   run('create box n1 0 0 100 50 "old"');
-  assert.equal(run('set n1 fill red'), 'g#n1 updated: fill="red"');
-  assert.equal(run('set n1 label "new"'), 'g#n1 updated: label="new"');
+  assert.equal(run('set n1 fill red'), 'box#n1 fill propagated to n1-rect');
+  assert.equal(run('set n1 label "new"'), 'box#n1 label updated: "new"');
   assert.match(run('show n1-rect') ?? '', /fill=red/);
   assert.match(run('show n1-label') ?? '', /text="new"/);
   run('undo');
@@ -173,6 +173,23 @@ test('box serializes as ordinary SVG and restores or degrades by registration', 
   assert.equal(degraded.find('n1')?.type, 'g');
 });
 
+test('Phase1 box session replays end to end with exact operation messages', () => {
+  const { run } = cli();
+  assert.equal(run('init 800 600'), 'canvas 800x600 created');
+  assert.equal(run('create box n1 120 100 160 60 "开始"'), 'box#n1 created (g#n1 + rect#n1-rect + text#n1-label)');
+  assert.equal(run('create box n2 520 100 160 60 "处理数据"'), 'box#n2 created (g#n2 + rect#n2-rect + text#n2-label)');
+  assert.equal(run('create line arrow1 280 130 520 130 black'), 'line#arrow1 created');
+  assert.equal(run('group flowchart n1 n2 arrow1'), 'g#flowchart created with 3 children');
+  assert.equal(run('move n2 0 100'), 'box#n2 moved by (0,100)');
+  assert.equal(run('undo'), 'box#n2 moved back by (0,-100)');
+  assert.equal(run('set n2 fill #f5a623'), 'box#n2 fill propagated to n2-rect');
+  assert.equal(run('set n2 label "处理数据 v2"'), 'box#n2 label updated: "处理数据 v2"');
+  assert.equal(run('undo'), 'box#n2 label restored: "处理数据"');
+  assert.match(run('show n2-rect') ?? '', /fill=#f5a623/);
+  assert.match(run('show n2-label') ?? '', /text="处理数据"/);
+  assert.equal(run('save .plugin-test-output.svg'), 'saved to .plugin-test-output.svg (8 elements)');
+});
+
 test('stats counts leaves depth-first in first-appearance order and excludes containers', () => {
   const { run } = cli();
   run('init');
@@ -186,7 +203,7 @@ test('stats counts leaves depth-first in first-appearance order and excludes con
   assert.equal(run('stats'), 'text: 2  rect: 3  circle: 1  (total 6, containers 2)');
   assert.equal(run('undo'), 'box#b removed');
   assert.equal(run('stats'), 'text: 1  rect: 2  circle: 1  (total 4, containers 1)');
-  assert.equal(run('redo'), 'box#b created');
+  assert.equal(run('redo'), 'box#b created (g#b + rect#b-rect + text#b-label)');
 });
 
 test('stats and dir are independently enabled and absent from help when disabled', () => {

@@ -28,9 +28,9 @@ function mustContainer(d: Document, id: string): Group {
 function movedMessage(shape: Shape, dx: number, dy: number, back: boolean): string {
   const anchor = shape.anchor();
   if (anchor) {
-    return `${shape.label} moved ${back ? 'back ' : ''}to (${anchor[0]},${anchor[1]})`;
+    return `${shape.operationLabel} moved ${back ? 'back ' : ''}to (${anchor[0]},${anchor[1]})`;
   }
-  return `${shape.label} moved ${back ? 'back ' : ''}by (${dx},${dy})`;
+  return `${shape.operationLabel} moved ${back ? 'back ' : ''}by (${dx},${dy})`;
 }
 
 interface Slot {
@@ -180,10 +180,12 @@ export class EditorModel {
     const shape = this.factory.create(type, id, params);
     d.attach(shape, container);
     shape.modified = true;
-    const label = `${shape.type}#${shape.id}`;
+    const label = shape.operationLabel;
+    const detail = shape.creationDetail();
+    const suffix = detail ? ` ${detail}` : '';
     const message = container
-      ? `${label} created in ${container.label}`
-      : `${label} created`;
+      ? `${label} created in ${container.label}${suffix}`
+      : `${label} created${suffix}`;
 
     return {
       message,
@@ -203,6 +205,7 @@ export class EditorModel {
   deleteShape(id: string): EditOutcome {
     const d = this.document();
     const shape = mustFind(d, id);
+    if (shape.structuralPart) throw new ModelError(`cannot modify plugin-owned shape part: ${id}`);
 
     const { parent, index } = d.detach(shape);
     const parentLabel = parent === d.root ? 'svg' : parent.label;
@@ -290,17 +293,18 @@ export class EditorModel {
       const custom = this.attributes.apply(shape, attr, value);
       if (custom) {
         shape.modified = true;
+        const customMessage = custom.message ?? message;
         return {
-          message,
+          message: customMessage,
           undo: () => {
             custom.undo();
             shape.modified = wasModified;
-            return `${shape.label} updated: ${attr} restored`;
+            return custom.undoMessage ?? `${shape.label} updated: ${attr} restored`;
           },
           redo: () => {
             custom.redo();
             shape.modified = true;
-            return message;
+            return customMessage;
           },
         };
       }
@@ -340,6 +344,9 @@ export class EditorModel {
     const d = this.document();
     if (d.has(gid)) throw new ModelError(`id already exists: ${gid}`);
     const targets = ids.map((id) => mustFind(d, id));
+    for (const target of targets) {
+      if (target.structuralPart) throw new ModelError(`cannot modify plugin-owned shape part: ${target.id}`);
+    }
 
     // 目标列表不得同时包含某容器与其子孙
     for (const a of targets) {
@@ -438,6 +445,7 @@ export class EditorModel {
     const d = this.document();
     const group = mustContainer(d, gid);
     const shape = mustFind(d, id);
+    if (shape.structuralPart) throw new ModelError(`cannot modify plugin-owned shape part: ${id}`);
 
     if (shape === group || d.isAncestor(shape, group)) {
       throw new ModelError(`cannot group a container into its own descendant: ${shape.id}`);

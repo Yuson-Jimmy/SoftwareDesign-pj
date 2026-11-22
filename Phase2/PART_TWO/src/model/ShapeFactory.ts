@@ -26,6 +26,10 @@ export class ShapeFactory {
     return this.providers.get(type)?.load(id, attrs, text) ?? null;
   }
 
+  validate(type: string, shape: Shape): void {
+    this.providers.get(type)?.validate?.(shape);
+  }
+
   types(): string[] {
     return [...this.providers.keys()];
   }

@@ -5,4 +5,6 @@ export interface ShapeProvider {
   readonly type: string;
   create(id: string, args: string[]): Shape;
   load(id: string, attrs: Record<string, string>, text: string): Shape;
+  /** 子元素读完后校验复合不变量；无校验需求的类型无需实现。 */
+  validate?(shape: Shape): void;
 }

@@ -46,6 +46,9 @@ export abstract class Shape {
   /** 插件所有的复合结构不能按普通 g 解散。 */
   readonly composite: boolean = false;
 
+  /** 必要内部部件不能由普通 delete/group/addto 命令拆出。 */
+  readonly structuralPart: boolean = false;
+
   protected constructor(public readonly id: string) {}
 
   /** SVG 标签名 */
@@ -133,6 +136,16 @@ export abstract class Shape {
   /** 显示名：rect#r1 */
   get label(): string {
     return `${this.kind}#${this.id}`;
+  }
+
+  /** 命令回显名；复合插件可区别于树中的物理容器标签。 */
+  get operationLabel(): string {
+    return this.label;
+  }
+
+  /** 可选创建回显的补充说明。 */
+  creationDetail(): string {
+    return '';
   }
 
   protected styleAttrs(): [string, string][] {

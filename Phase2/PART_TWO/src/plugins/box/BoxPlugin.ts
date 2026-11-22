@@ -23,9 +23,12 @@ export class Box extends Group {
     super(id);
     if (withDefaultParts) {
       const rect = new Rect(`${id}-rect`, x, y, width, height);
+      Object.defineProperty(rect, 'structuralPart', { value: true });
       rect.fill = '#4a90d9';
       this.insert(rect);
-      this.insert(new Text(`${id}-label`, x + 20, y + 35, title));
+      const label = new Text(`${id}-label`, x + 20, y + 35, title);
+      Object.defineProperty(label, 'structuralPart', { value: true });
+      this.insert(label);
     }
   }
 
@@ -33,14 +36,22 @@ export class Box extends Group {
     return 'box';
   }
 
+  override get operationLabel(): string {
+    return `box#${this.id}`;
+  }
+
+  override creationDetail(): string {
+    return `(g#${this.id} + rect#${this.id}-rect + text#${this.id}-label)`;
+  }
+
   get rect(): Rect {
-    const rect = this.children.find((child): child is Rect => child.id === `${this.id}-rect`);
+    const rect = this.children.find((child): child is Rect => child instanceof Rect && child.id === `${this.id}-rect`);
     if (!rect) throw new ModelError(`invalid box: missing rect part: ${this.id}`);
     return rect;
   }
 
   get title(): Text {
-    const text = this.children.find((child): child is Text => child.id === `${this.id}-label`);
+    const text = this.children.find((child): child is Text => child instanceof Text && child.id === `${this.id}-label`);
     if (!text) throw new ModelError(`invalid box: missing label part: ${this.id}`);
     return text;
   }
@@ -77,16 +88,24 @@ export const boxPlugin: Plugin = {
     load(id) {
       return new Box(id);
     },
+    validate(shape) {
+      const box = requireBox(shape);
+      Object.defineProperty(box.rect, 'structuralPart', { value: true });
+      Object.defineProperty(box.title, 'structuralPart', { value: true });
+    },
   }],
   attributes: [
     {
       shapeType: 'box',
       attribute: 'fill',
       apply(shape, value) {
-        const rect = requireBox(shape).rect;
+        const box = requireBox(shape);
+        const rect = box.rect;
         const previous = rect.fill;
         rect.fill = value;
         return {
+          message: `${box.operationLabel} fill propagated to ${rect.id}`,
+          undoMessage: `${box.operationLabel} fill restored`,
           undo: () => { rect.fill = previous; },
           redo: () => { rect.fill = value; },
         };
@@ -96,10 +115,13 @@ export const boxPlugin: Plugin = {
       shapeType: 'box',
       attribute: 'label',
       apply(shape, value) {
-        const text = requireBox(shape).title;
+        const box = requireBox(shape);
+        const text = box.title;
         const previous = text.content;
         text.content = value;
         return {
+          message: `${box.operationLabel} label updated: "${value}"`,
+          undoMessage: `${box.operationLabel} label restored: "${previous}"`,
           undo: () => { text.content = previous; },
           redo: () => { text.content = value; },
         };
