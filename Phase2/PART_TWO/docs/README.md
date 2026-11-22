@@ -13,7 +13,7 @@
 | `ShapeProvider`（`model/ShapeProvider.ts`） | 提供一种图形的 CLI 构造及 SVG 读回 | `ShapeFactory.create/load`；间接触发于 `EditorModel.createShape` 和 `SvgReader.readString` | `BuiltinShapePlugin.ts` 中 rect/circle/ellipse/line/text/g；`BoxPlugin.ts` 中 box | 未注册类型报 `unknown shape type: <type> (is the plugin loaded?)`；无 box 时 `data-kind="box"` 降级为普通 `g` | 重复注册报 `shape provider already registered`；无 loader 结果返回 `null`，读入跳过该元素 |
 | `Command`（`commands/Command.ts`） | 一条用户命令的语法校验与执行 | `CommandRegistry.resolve`、`Repl.handleLine` 调 `Command.execute` | Phase1 全部命令；`StatsCommand`；`DirCommand` | 未注册命令报 `unknown command: <name>`；Phase1 内置命令仍由默认注册表提供 | 用户错误转为 `CommandError`，由 REPL 输出 `error:`；非领域程序错误原样抛出，不静默吞掉 |
 | `TreeDecorator`（`model/TreeDecorator.ts`） | 返回结构树某节点行尾的零个或多个标签 | `DisplayView.nodeLine`，由 `renderTree/renderChildren` 对每行调用 | `ModifiedStarPlugin.ts` 输出 `*`；`BoxPlugin.ts` 输出 `(box)` | 装饰器数组为空时仍输出 Phase1 原始树行 | 返回 `[]` 表示无标签；标签只拼接展示，不修改图形或树结构 |
-| `AttributeHandler`（`model/AttributeHandler.ts`） | 定义某类型某属性的 get/set/clear，支持撤销 | `EditorModel.setShapeAttribute` 经 `AttributeRegistry.get/set/clear` 调用 | `BoxPlugin.ts`：`fill` 转发内部 rect；`label` 转发内部 text | 无匹配处理器时走 Phase1 `Shape.get/set/clearAttribute`，原白名单不变 | 重复键报 `attribute handler already registered`；未知属性继续报 `unknown attribute`；旧值 `undefined` 也会正确走 handler 的 clear |
+| `AttributeHandler`（`model/AttributeHandler.ts`） | 定义某类型某属性的修改，并返回完整 undo/redo 变更闭包 | `EditorModel.setShapeAttribute` 经 `AttributeRegistry.apply` 调用 | `BoxPlugin.ts`：`fill` 转发内部 rect；`label` 转发内部 text | 无匹配处理器时走 Phase1 `Shape.get/set/clearAttribute`，原白名单不变 | 重复键在装配期拒绝；执行失败不回退默认处理；Document 检查点回滚部分修改且历史不变，详见 ADR-001 |
 
 ## 3. 默认装配与内核独立性
 
@@ -36,6 +36,10 @@
 - `(box)` 是 TreeDecorator，不让 DisplayView 判断 Box 类；`fill`、`label` 是 AttributeHandler，不向 Shape 基类添加属性分支。
 - 序列化为普通 `<g data-kind="box">` 和 rect/text。注册 box 时恢复复合语义；未注册时按普通 `g` 降级，内容不丢失。
 - 新建及 move/scale/set/group 的目标具有 `*`；save 后清除修改标记。撤销 move/scale/set 恢复此前的标记状态。
+
+### 4.1 属性事务契约
+
+处理器通过公开 Shape 或插件公开的子部件访问器执行修改，并返回 AttributeChange 闭包；一次 set 无论修改多少子部件都只登记一个 undo 单元。同类型同属性多个处理器在装配期明确拒绝。apply 抛错时 Document.checkpoint() 原地恢复字段、子节点顺序和 id 注册表，既有历史闭包的对象身份不变，也不新增历史或清空 redo。无处理器命中才进入 Phase1 白名单。完整决策见 [ADR-001](adr/001-attribute-handler-transactions.md)。
 
 ## 5. stats 与 dir
 
@@ -74,6 +78,6 @@
 npm run test:all
 ```
 
-`src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。
+`src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。属性专项还覆盖普通白名单回退、多子字段单次撤销、重复处理器拒绝和故障后的文档/历史回滚。
 
-最终验证：strict 类型检查通过，**11 项测试全部通过，0 失败**。
+最终验证：strict 类型检查通过，**15 项测试全部通过，0 失败**。

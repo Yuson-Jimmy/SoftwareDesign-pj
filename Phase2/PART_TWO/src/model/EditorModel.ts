@@ -278,37 +278,57 @@ export class EditorModel {
     };
   }
 
-  /** set <id> <attr> <value>：白名单内的属性改写；记录旧值用于撤销 */
+  /** set：处理器变更或 Phase1 白名单修改均原子执行，一条命令只产出一个历史单元。 */
   setShapeAttribute(id: string, attr: string, value: string): EditOutcome {
     const d = this.document();
     const shape = mustFind(d, id);
-
-    // 注册处理器优先；未注册属性保持 Phase1 的内核白名单行为。
+    const checkpoint = d.checkpoint();
     const wasModified = shape.modified;
-    const oldValue = this.attributes.get(shape, attr);
-    this.attributes.set(shape, attr, value);
-    shape.modified = true;
-
     const message = `${shape.label} updated: ${attr}="${value}"`;
-    const undoMessage =
-      oldValue === undefined
+
+    try {
+      const custom = this.attributes.apply(shape, attr, value);
+      if (custom) {
+        shape.modified = true;
+        return {
+          message,
+          undo: () => {
+            custom.undo();
+            shape.modified = wasModified;
+            return `${shape.label} updated: ${attr} restored`;
+          },
+          redo: () => {
+            custom.redo();
+            shape.modified = true;
+            return message;
+          },
+        };
+      }
+
+      const oldValue = shape.getAttribute(attr);
+      shape.setAttribute(attr, value);
+      shape.modified = true;
+      const undoMessage = oldValue === undefined
         ? `${shape.label} updated: ${attr} unset`
         : `${shape.label} updated: ${attr}="${oldValue}"`;
-
-    return {
-      message,
-      undo: () => {
-        if (oldValue === undefined) this.attributes.clear(shape, attr);
-        else this.attributes.set(shape, attr, oldValue);
-        shape.modified = wasModified;
-        return undoMessage;
-      },
-      redo: () => {
-        this.attributes.set(shape, attr, value);
-        shape.modified = true;
-        return message;
-      },
-    };
+      return {
+        message,
+        undo: () => {
+          if (oldValue === undefined) shape.clearAttribute(attr);
+          else shape.setAttribute(attr, oldValue);
+          shape.modified = wasModified;
+          return undoMessage;
+        },
+        redo: () => {
+          shape.setAttribute(attr, value);
+          shape.modified = true;
+          return message;
+        },
+      };
+    } catch (error) {
+      checkpoint.restore();
+      throw error;
+    }
   }
 
   /**

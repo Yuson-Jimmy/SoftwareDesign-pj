@@ -82,16 +82,28 @@ export const boxPlugin: Plugin = {
     {
       shapeType: 'box',
       attribute: 'fill',
-      get: (shape) => requireBox(shape).rect.fill,
-      set: (shape, value) => { requireBox(shape).rect.fill = value; },
-      clear: (shape) => { requireBox(shape).rect.fill = undefined; },
+      apply(shape, value) {
+        const rect = requireBox(shape).rect;
+        const previous = rect.fill;
+        rect.fill = value;
+        return {
+          undo: () => { rect.fill = previous; },
+          redo: () => { rect.fill = value; },
+        };
+      },
     },
     {
       shapeType: 'box',
       attribute: 'label',
-      get: (shape) => requireBox(shape).title.content,
-      set: (shape, value) => { requireBox(shape).title.content = value; },
-      clear: (shape) => { requireBox(shape).title.content = ''; },
+      apply(shape, value) {
+        const text = requireBox(shape).title;
+        const previous = text.content;
+        text.content = value;
+        return {
+          undo: () => { text.content = previous; },
+          redo: () => { text.content = value; },
+        };
+      },
     },
   ],
   treeDecorators: [{

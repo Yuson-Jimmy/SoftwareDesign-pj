@@ -8,6 +8,7 @@ import { Repl } from '../cli/Repl';
 import { CommandError } from '../commands/Command';
 import { renderTree } from '../model/DisplayView';
 import { Group } from '../model/Group';
+import { ModelError } from '../model/Shape';
 import { SvgReader } from '../model/SvgReader';
 import { SvgWriter } from '../model/SvgWriter';
 import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
@@ -73,6 +74,84 @@ test('box attribute handlers propagate fill and label with undo/redo', () => {
   assert.doesNotMatch(run('show n1-rect') ?? '', /fill=red/);
   run('redo');
   assert.match(run('show n1-rect') ?? '', /fill=red/);
+});
+
+test('unhandled attributes retain Phase1 behavior without inventing label support', () => {
+  const { run } = cli();
+  run('init');
+  run('create rect r 0 0 1 1 red');
+  assert.equal(run('set r fill blue'), 'rect#r updated: fill="blue"');
+  assert.equal(run('set r label "no"'), 'error: unknown attribute: label');
+  assert.match(run('show r') ?? '', /fill=blue/);
+});
+
+test('one attribute handler can atomically undo and redo multiple child changes', () => {
+  const application = createApplication([builtinShapePlugin, {
+    name: 'paint-plugin',
+    attributes: [{
+      shapeType: 'rect',
+      attribute: 'paint',
+      apply(shape, value) {
+        const fill = shape.fill;
+        const stroke = shape.stroke;
+        shape.fill = value;
+        shape.stroke = value;
+        return {
+          undo: () => { shape.fill = fill; shape.stroke = stroke; },
+          redo: () => { shape.fill = value; shape.stroke = value; },
+        };
+      },
+    }],
+  }]);
+  const repl = new Repl(application);
+  repl.handleLine('init');
+  repl.handleLine('create rect r 0 0 1 1');
+  repl.handleLine('set r paint purple');
+  assert.match(repl.handleLine('show r') ?? '', /fill=purple\n  stroke=purple/);
+  repl.handleLine('undo');
+  assert.doesNotMatch(repl.handleLine('show r') ?? '', /purple/);
+  repl.handleLine('redo');
+  assert.match(repl.handleLine('show r') ?? '', /fill=purple\n  stroke=purple/);
+});
+
+test('multiple handlers for the same shape and attribute are rejected explicitly', () => {
+  const handler = {
+    shapeType: 'rect',
+    attribute: 'fill',
+    apply: () => ({ undo: () => {}, redo: () => {} }),
+  };
+  assert.throws(
+    () => createApplication([{ name: 'a', attributes: [handler] }, { name: 'b', attributes: [handler] }]),
+    /attribute handler already registered: rect.fill/,
+  );
+});
+
+test('a partially failing handler rolls back document and preserves history', () => {
+  const application = createApplication([builtinShapePlugin, {
+    name: 'failing-plugin',
+    attributes: [{
+      shapeType: 'rect',
+      attribute: 'explode',
+      apply(shape) {
+        shape.fill = 'partial-fill';
+        shape.stroke = 'partial-stroke';
+        throw new ModelError('plugin failed');
+      },
+    }],
+  }]);
+  const repl = new Repl(application);
+  repl.handleLine('init');
+  repl.handleLine('create rect r 0 0 1 1 red');
+  repl.handleLine('set r stroke black');
+  assert.equal(repl.handleLine('set r explode value'), 'error: plugin failed');
+  const before = repl.handleLine('show r');
+  assert.match(before ?? '', /fill=red/);
+  assert.match(before ?? '', /stroke=black/);
+  assert.doesNotMatch(before ?? '', /partial/);
+  assert.equal(repl.handleLine('undo'), 'rect#r updated: stroke unset');
+  assert.doesNotMatch(repl.handleLine('show r') ?? '', /stroke=/);
+  assert.equal(repl.handleLine('redo'), 'rect#r updated: stroke="black"');
+  assert.match(repl.handleLine('show r') ?? '', /stroke=black/);
 });
 
 test('box serializes as ordinary SVG and restores or degrades by registration', () => {

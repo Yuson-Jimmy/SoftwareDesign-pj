@@ -92,4 +92,48 @@ export class Document {
     }
     return false;
   }
+
+  /**
+   * 属性事务检查点：保留所有现有 Shape 对象身份，避免旧历史闭包失效。
+   * 当前图形数据为标量；Group.children 单独复制，父子关系与 id 注册表一并恢复。
+   */
+  checkpoint(): DocumentCheckpoint {
+    const shapes = [...this.root.walk()];
+    const values = shapes.map((shape) => {
+      const fields = new Map<string, unknown>();
+      const record = shape as unknown as Record<string, unknown>;
+      for (const key of Object.keys(record)) {
+        if (key !== 'parent' && key !== 'children') fields.set(key, record[key]);
+      }
+      return { shape, fields };
+    });
+    const children = new Map<Group, Shape[]>(
+      shapes.filter((shape): shape is Group => shape instanceof Group).map((group) => [group, [...group.children]]),
+    );
+    const registry = new Map(this.registry);
+    const width = this.width;
+    const height = this.height;
+
+    return {
+      restore: () => {
+        for (const { shape, fields } of values) {
+          for (const [key, value] of fields) {
+            (shape as unknown as Record<string, unknown>)[key] = value;
+          }
+        }
+        for (const [group, original] of children) {
+          group.children.splice(0, group.children.length, ...original);
+          for (const child of original) child.parent = group;
+        }
+        this.registry.clear();
+        for (const [id, shape] of registry) this.registry.set(id, shape);
+        this.width = width;
+        this.height = height;
+      },
+    };
+  }
+}
+
+export interface DocumentCheckpoint {
+  restore(): void;
 }
