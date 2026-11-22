@@ -37,9 +37,15 @@
 - 序列化为普通 `<g data-kind="box">` 和 rect/text。注册 box 时恢复复合语义；未注册时按普通 `g` 降级，内容不丢失。
 - 创建前检查整棵新子树的 id，派生 id 冲突不留下任何部件。安装插件后读到缺失/错误部件会拒绝整个 read 并保留原文档；重复 id 同样拒绝。
 - 必要子部件带通用 structuralPart 标记，普通 delete/group/addto 不得拆走；整个 box 的删除、移动和编组仍可用。详见 [ADR-002](adr/002-box-composite-invariants.md)。
-- 新建及 move/scale/set/group 的目标具有 `*`；save 后清除修改标记。撤销 move/scale/set 恢复此前的标记状态。
+- box 行可同时显示 `(box)` 与 `*`，默认顺序为 `(box) *`，两个标签互不知晓。
 
-### 4.1 属性事务契约
+### 4.1 树标签与 modified-star 状态机
+
+`modified-star` 按“当前普通 SVG 内容与上次保存快照不一致”判定 dirty，而不是按是否执行过编辑命令判定。新建节点没有保存快照，因此立即显示 `*`；`init/read` 建立初始基线，`save` 成功后更新基线；编辑后 undo 回到保存点时 `*` 消失，redo 后恢复。子图形变化会传播到祖先容器，完整树的 `svg (WxH)` 根行也会显示 `*`。
+
+快照保存在每个装饰器实例的 `WeakMap` 字段中，不使用模块级集合，也不再占用 Shape 内核字段。内核只提供通用 `documentLoaded/documentSaved` 通知；DisplayView 按插件注册顺序用空格拼接标签，不识别具体标签。无装饰器时根行和节点行保持 Phase1 原样。完整决策见 [ADR-003](adr/003-tree-label-state-and-order.md)。
+
+### 4.2 属性事务契约
 
 处理器通过公开 Shape 或插件公开的子部件访问器执行修改，并返回 AttributeChange 闭包；一次 set 无论修改多少子部件都只登记一个 undo 单元。同类型同属性多个处理器在装配期明确拒绝。apply 抛错时 Document.checkpoint() 原地恢复字段、子节点顺序和 id 注册表，既有历史闭包的对象身份不变，也不新增历史或清空 redo。无处理器命中才进入 Phase1 白名单。完整决策见 [ADR-001](adr/001-attribute-handler-transactions.md)。
 
@@ -82,4 +88,4 @@ npm run test:all
 
 `src/test/plugins.test.ts` 在真实 Repl/注册表/工厂/模型调用链上验证：默认六图形与 Phase1 命令、空插件缺省行为、box 创建和嵌套、两类树装饰、fill/label 传播及 undo/redo、SVG 读回和降级、stats 深度优先顺序及容器排除、stats/dir 独立启停、dir 格式/空目录/隐藏项/失败、undo/redo 不变，以及临时目录中代码装配与配置装配的真实适配器输出一致。属性专项还覆盖普通白名单回退、多子字段单次撤销、重复处理器拒绝和故障后的文档/历史回滚。
 
-最终验证：strict 类型检查通过，**24 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现。
+最终验证：strict 类型检查通过，**28 项测试全部通过，0 失败**。其中 `boxPlugin.test.ts` 的 8 项独立测试不依赖其他插件，另含 Phase1 §6.1 box 会话端到端复现；`treeLabelPlugin.test.ts` 的 4 项测试独立覆盖 Phase1 树基线、新建/保存/编辑/undo/redo 状态机、祖先传播和插件实例隔离。

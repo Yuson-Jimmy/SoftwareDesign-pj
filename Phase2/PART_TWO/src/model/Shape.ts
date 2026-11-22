@@ -40,9 +40,6 @@ export abstract class Shape {
   stroke?: string;
   strokeWidth?: string;
 
-  /** 会话编辑标记，由 modified-star 装饰器消费。 */
-  modified = false;
-
   /** 插件所有的复合结构不能按普通 g 解散。 */
   readonly composite: boolean = false;
 

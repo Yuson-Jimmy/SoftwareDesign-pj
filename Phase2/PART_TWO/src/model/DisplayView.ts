@@ -43,7 +43,9 @@ export function renderTree(d: Document, id?: string, decorators: TreeDecorator[]
     return lines.join('\n');
   }
 
-  const lines = [`svg (${d.width}x${d.height})`];
+  const rootLine = `svg (${d.width}x${d.height})`;
+  const rootDecorations = decorators.flatMap((decorator) => decorator.decorations(d.root));
+  const lines = [rootDecorations.length > 0 ? `${rootLine} ${rootDecorations.join(' ')}` : rootLine];
   renderChildren(d.root, '', lines, decorators);
   return lines.join('\n');
 }

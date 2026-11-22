@@ -127,6 +127,7 @@ export class EditorModel {
     }
     this.doc = new Document(width, height);
     this.sourcePath = null;
+    for (const decorator of this.decorators) decorator.documentLoaded?.(this.doc);
     return `canvas ${width}x${height} created`;
   }
 
@@ -135,6 +136,7 @@ export class EditorModel {
     const { doc, warnings } = this.reader.readFile(path);
     this.doc = doc;
     this.sourcePath = path;
+    for (const decorator of this.decorators) decorator.documentLoaded?.(doc);
     return [...warnings, `read ${path} (${doc.count()} elements)`].join('\n');
   }
 
@@ -144,7 +146,7 @@ export class EditorModel {
     const target = path ?? this.sourcePath;
     if (!target) throw new ModelError('no file specified and no source path');
     this.writer.writeFile(d, target);
-    for (const shape of d.root.walk()) shape.modified = false;
+    for (const decorator of this.decorators) decorator.documentSaved?.(d);
     return `saved to ${target} (${d.count()} elements)`;
   }
 
@@ -179,7 +181,6 @@ export class EditorModel {
 
     const shape = this.factory.create(type, id, params);
     d.attach(shape, container);
-    shape.modified = true;
     const label = shape.operationLabel;
     const detail = shape.creationDetail();
     const suffix = detail ? ` ${detail}` : '';
@@ -195,7 +196,6 @@ export class EditorModel {
       },
       redo: () => {
         d.attach(shape, container);
-        shape.modified = true;
         return message;
       },
     };
@@ -235,20 +235,16 @@ export class EditorModel {
     const dx = parseNum(dxRaw, 'dx');
     const dy = parseNum(dyRaw, 'dy');
 
-    const wasModified = shape.modified;
     shape.move(dx, dy);
-    shape.modified = true;
 
     return {
       message: movedMessage(shape, dx, dy, false),
       undo: () => {
         shape.move(-dx, -dy);
-        shape.modified = wasModified;
         return movedMessage(shape, -dx, -dy, true);
       },
       redo: () => {
         shape.move(dx, dy);
-        shape.modified = true;
         return movedMessage(shape, dx, dy, false);
       },
     };
@@ -261,21 +257,17 @@ export class EditorModel {
     const factor = parseNum(factorRaw, 'factor');
     if (factor <= 0) throw new ModelError('scale factor must be positive');
 
-    const wasModified = shape.modified;
     shape.scale(factor);
-    shape.modified = true;
     const inverse = 1 / factor;
 
     return {
       message: `${shape.label} scaled by ${factor}`,
       undo: () => {
         shape.scale(inverse);
-        shape.modified = wasModified;
         return `${shape.label} scaled back by ${inverse}`;
       },
       redo: () => {
         shape.scale(factor);
-        shape.modified = true;
         return `${shape.label} scaled by ${factor}`;
       },
     };
@@ -286,24 +278,20 @@ export class EditorModel {
     const d = this.document();
     const shape = mustFind(d, id);
     const checkpoint = d.checkpoint();
-    const wasModified = shape.modified;
     const message = `${shape.label} updated: ${attr}="${value}"`;
 
     try {
       const custom = this.attributes.apply(shape, attr, value);
       if (custom) {
-        shape.modified = true;
         const customMessage = custom.message ?? message;
         return {
           message: customMessage,
           undo: () => {
             custom.undo();
-            shape.modified = wasModified;
             return custom.undoMessage ?? `${shape.label} updated: ${attr} restored`;
           },
           redo: () => {
             custom.redo();
-            shape.modified = true;
             return customMessage;
           },
         };
@@ -311,8 +299,7 @@ export class EditorModel {
 
       const oldValue = shape.getAttribute(attr);
       shape.setAttribute(attr, value);
-      shape.modified = true;
-      const undoMessage = oldValue === undefined
+        const undoMessage = oldValue === undefined
         ? `${shape.label} updated: ${attr} unset`
         : `${shape.label} updated: ${attr}="${oldValue}"`;
       return {
@@ -320,12 +307,10 @@ export class EditorModel {
         undo: () => {
           if (oldValue === undefined) shape.clearAttribute(attr);
           else shape.setAttribute(attr, oldValue);
-          shape.modified = wasModified;
           return undoMessage;
         },
         redo: () => {
           shape.setAttribute(attr, value);
-          shape.modified = true;
           return message;
         },
       };
@@ -366,7 +351,6 @@ export class EditorModel {
     const anchor = slots[0];
 
     const group = new Group(gid);
-    group.modified = true;
     d.attach(group, anchor.parent, anchor.index);
     for (const slot of slots) {
       d.reparent(slot.shape, group);

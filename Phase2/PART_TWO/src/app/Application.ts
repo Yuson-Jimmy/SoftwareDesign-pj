@@ -6,7 +6,7 @@ import { ShapeFactory } from '../model/ShapeFactory';
 import type { TreeDecorator } from '../model/TreeDecorator';
 import { boxPlugin } from '../plugins/box/BoxPlugin';
 import { builtinShapePlugin } from '../plugins/builtin/BuiltinShapePlugin';
-import { modifiedStarPlugin } from '../plugins/builtin/ModifiedStarPlugin';
+import { createModifiedStarPlugin } from '../plugins/builtin/ModifiedStarPlugin';
 import { createDirPlugin } from '../plugins/commands/DirPlugin';
 import { statsPlugin } from '../plugins/commands/StatsPlugin';
 import type { Plugin } from '../plugins/Plugin';
@@ -42,7 +42,7 @@ export function createDefaultApplication(): Application {
   return createApplication([
     builtinShapePlugin,
     boxPlugin,
-    modifiedStarPlugin,
+    createModifiedStarPlugin(),
     statsPlugin,
     createDirPlugin(),
   ]);
